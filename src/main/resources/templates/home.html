@@ -15,7 +15,7 @@
 </head>
 <body>
 <!-- NAVBAR -->
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -23,12 +23,12 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Lords of Catan</a>
+            <a class="navbar-brand" th:href="@{/}">Lords of Catan</a>
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">ABOUT US</a></li>
-                <li><a href="#">JOIN</a></li>
+                <li><a href="#about">ABOUT US</a></li>
+                <li><a th:href="@{/register}">JOIN</a></li>
             </ul>
         </div>
     </div>
@@ -36,7 +36,7 @@
 
 <!-- WELCOME -->
 <section class="welcome">
-    <div class="container-fluid bg-1 text-center">
+    <div class="container-fluid bg-1 text-center" style="padding-top: 200px">
         <h3 class="margin">Play Settlers of Catan online!</h3>
         <img th:src="@{/images/bird.jpg}" class="img-responsive img-circle margin" style="display:inline" alt="Bird" width="350" height="350"/>
         <br/>
@@ -59,25 +59,28 @@
                     <form action="#" th:action="@{/}" th:object="${login}" method="post">
                         <div class="form-group">
                             <input type="text" th:field="*{username}" class="form-control"  placeholder="Enter email"/>
-
                         </div>
-                        <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Title error message</p>
                         <div class="form-group">
-                            <input type="text" th:field="*{password}" class="form-control"  placeholder="Enter password"/>
-
+                            <input type="password" th:field="*{password}" class="form-control"  placeholder="Enter password"/>
+                            <p th:if="${!login.getValidStatus()}" style="color: red;"> Wrong username or password.</p>
                         </div>
-                        <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Title error message</p>
-                        <td><button type="submit">Submit post</button></td>
+                        <div class="login-box checkbox">
+                            <input type="checkbox"/>
+                            Remember me
+                        </div>
+
+                        <td><button class="login-button"  type="submit">SUBMIT</button></td>
+
                     </form>
                 </div>
-                <p>Don't have an account?  <a>Join Here.</a></p>
+                <p>Don't have an account?  <a th:href="@{/register}">Join Here.</a></p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- ABOUT US -->
-<section class="about_us">
+<section id="about" class="about_us">
     <div class="container-fluid bg-3 text-center">
         <h3 class="margin">The True Lords of Catan</h3>
         <div class="row">
@@ -117,6 +120,7 @@
 
 </body>
 </html>
+
 
 
 

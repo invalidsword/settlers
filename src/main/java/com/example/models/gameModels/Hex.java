@@ -5,8 +5,10 @@ package com.example.models.gameModels;
  */
 public abstract class Hex extends Geometry{
 
+
     public Hex(int x,int y) {super(x,y);}
     public abstract TerrainKind getTerrainType();
+
 
     @Override
     public Hex getHexNeighbours() {

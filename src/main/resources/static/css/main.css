@@ -21,61 +21,204 @@ p {font-size: 16px;}
     background-color: #2f2f2f; /* Black Gray */
     color: #fff;
 }
+.bg-5 {
+    background-color: #2c313a; /* Black Gray */
+    color: #fff;
+}
+
 .container-fluid {
     padding-top: 70px;
     padding-bottom: 70px;
 }
+
 .navbar {
     padding-top: 20px;
     padding-bottom: 20px;
     border: 0;
     border-radius: 0;
-    margin-bottom: 0;
+    margin-bottom: 0px;
     font-size: 12px;
     letter-spacing: 5px;
     background-color: #5c4e3d;
 }
-.navbar-default .navbar-brand{
+
+.navbar-fixed-top .navbar-brand{
     font-family: 'IM Fell English SC', serif;
     font-size: 70px;
-    color: #d4ad11;
-}
-.navbar-default .navbar-brand:hover {
     color: #ecc113 !important;
-    background-color: transparent;
+}
+.navbar-fixed-top .navbar-brand:hover {
+    opacity: 0.75;
 }
 
-.navbar-default .navbar-nav > li > a {
-    color: #d4ad11;
+.navbar-fixed-top .navbar-nav > li > a {
+    color: #ecc113 !important;
     font-size: 16px;
 }
 
-.navbar-default .navbar-nav > li > a:hover {
-    color: #ecc113;
+.navbar-fixed-top .navbar-nav > li > a:hover {
+    opacity: 0.75;
 }
 
 .login-box{
-
     background: #2c313a;
     border:2px solid #2c313a;
     box-shadow:0 0 10px #2c313a;
     padding-bottom: 20px;
-
 }
+
 .login-box h3{
     margin-bottom: 30px;
-
 }
 
 .login-box p{
     margin-top: 10px;
+}
 
+input[type="checkbox"] {
+}
+
+.checkbox {
+    margin: 1px 0 0 0;
+    font-size: 15px;
+}
+
+.login-button {
+    background-color:  #474e5d; /* Dark Blue */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.login-button:hover {
+    background: #3071A9
+}
+
+.create-button {
+    background-color:  #474e5d; /* Dark Blue */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.create-button:hover{
+    background: #3071A9
+}
+
+.lobby-box{
+    background: #2c313a;
+    border:2px solid #2c313a;
+    box-shadow:0 0 10px #2c313a;
+    padding-bottom: 20px;
+    margin-left: 0px;
+
+}
+
+.lobby-box h1{
+    color: white;
+    margin-bottom: 40px;
+}
+
+.player-box{
+    background: #2c313a;
+    border:2px solid #2c313a;
+    box-shadow:0 0 10px #2c313a;
+    padding-bottom: 20px;
+    margin-left: 0px;
+
+}
+
+.player-box h1{
+    color: white;
+    margin-bottom: 40px;
+}
+
+.room-btn {
+    background-color: lightseagreen;
+    border: groove #2c313a;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    width: 900px;
+}
+
+.room-btn:hover {
+    background: #3071A9
+}
+
+.player-btn {
+    background-color: lightseagreen;
+    border: groove #2c313a;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    width: 400px;
+}
+
+.player-btn:hover {
+    background: #3071A9
+}
+
+.scroll {
+    background-color: black;
+    height: 400px;
+    overflow: scroll;
 }
 
 .margin{
     font-size: 50px;
     color: #5c4e3d;
     font-family: 'IM Fell English SC', serif;
+}
+
+.die1{
+    float: left;
+    width: 70px;
+    background: darkred;
+    border: #999 1px solid;
+    padding: 10px;
+    font-size: 24px;
+    text-align: center;
+    color: gold;
+    margin: 5px;
+}
+
+.die2{
+    float: left;
+    width: 70px;
+    background: gold;
+    border: #999 1px solid;
+    padding: 10px;
+    font-size: 24px;
+    text-align: center;
+    color: darkred;
+    margin: 5px;
+}
+
+.eventDie{
+    float: left;
+    width: 70px;
+    background: ghostwhite;
+    border: #999 1px solid;
+    padding: 10px;
+    font-size: 24px;
+    text-align: center;
+    color: black;
+    margin: 5px;
 }
 
 .about_us p{
