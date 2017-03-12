@@ -113,6 +113,7 @@ public class GameController {
             case "sheep" : aHex = new LandHex(pHex.getId(),pHex.getNumber(),TerrainType.Pasture ); break;
             case "gold" : aHex = new LandHex(pHex.getId(),pHex.getNumber(),TerrainType.GoldMine); break;
             case "wheat" : aHex = new LandHex(pHex.getId(),pHex.getNumber(),TerrainType.Fields); break;
+            case "desert" : aHex = new LandHex(pHex.getId(),pHex.getNumber(),TerrainType.Desert); break;
             case "sea" : aHex = new SeaHex(pHex.getId());
             default: aHex= new SeaHex(pHex.getId());
         }
