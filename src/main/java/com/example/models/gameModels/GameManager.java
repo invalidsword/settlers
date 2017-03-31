@@ -1,433 +1,420 @@
 package com.example.models.gameModels;
-import java.util.*;
+/**
+ * Created by G on 17/03/03.
+ */
 
 public class GameManager {
-    private static GameManager gameManager = new GameManager();
-    private static Game aGame;
-
-
-    private GameManager() {
-    }
-
-    public static GameManager instance() {
-        return gameManager;
-    }
-
-    public static ArrayList<Player> createPlayers(ArrayList<String> pPlayerNames) {
-        ArrayList<String> aPlayerColors = new ArrayList<>();
-        ArrayList<String> aPlayerNames = new ArrayList<>();
-        ArrayList<Player> aPlayers = new ArrayList<>();
-
-        aPlayerColors.add("red");
-        aPlayerColors.add("yellow");
-        aPlayerColors.add("green");
-        aPlayerColors.add("blue");
-        aPlayerNames = pPlayerNames;
-
-        for (int i = 0; i < aPlayerNames.size(); i++) {
-            aPlayers.add(new Player(aPlayerNames.get(i), aPlayerColors.get(i), i));
-        }
-        return aPlayers;
-    }
-
-    public static Board createBoard() {
-        return null;
-    }
-
-    public static void createGame(int pVPsToWin, ArrayList<String> playerNames) {
-        List<Player> aPlayers = createPlayers(playerNames);
-        Board aBoard = createBoard();
-        Game game = new Game(pVPsToWin, aPlayers, aBoard);
-        aGame = game;
-    }
-
-    public static void saveGame(){
-    }
-
-    public static Game getGame(){
-        return aGame;
-    }
-
-
-    //add and remove resources
-    public void addResource(StealableCard.Resource pResource, int pAmount) {
-        aGame.getResourceCards().put(pResource, aGame.getResourceCards().get(pResource) + pAmount);
-    }
-    public void removeResource(StealableCard.Resource pResource, int pAmount) {
-        assert (aGame.getResourceCards().get(pResource) >= pAmount);
-        aGame.getResourceCards().put(pResource, aGame.getResourceCards().get(pResource) - pAmount);
-    }
-
-    //add and remove commodities
-    public void addCommodity(StealableCard.Commodity pCommodity, int pAmount) {
-        aGame.getCommodityCards().put(pCommodity, aGame.getCommodityCards().get(pCommodity) + pAmount);
-    }
-    public void removeCommodity(StealableCard.Commodity pCommodity, int pAmount) {
-        assert (aGame.getCommodityCards().get(pCommodity) >= pAmount);
-        aGame.getCommodityCards().put(pCommodity, aGame.getCommodityCards().get(pCommodity) - pAmount);
-    }
-
-    private void waitToSet(){
-        try {
-            Thread.sleep(10000);
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    public void rollDice(int pYellow, int pRed, int pEvent){
-        aGame.setPhase(Game.GamePhase.TurnFirstPhase);
-        aGame.setRedDice(Game.DiceNumber.values()[pRed]);
-        aGame.setYellowDice(Game.DiceNumber.values()[pYellow]);
-        int eventIndex = pEvent;
-        switch (eventIndex){
-            case 1:
-                aGame.setEventDice(Game.EventType.values()[0]);
-            case 2:
-                aGame.setEventDice(Game.EventType.values()[0]);;
-            case 3:
-                aGame.setEventDice(Game.EventType.values()[0]);
-            case 4:
-                aGame.setEventDice(Game.EventType.values()[1]);
-            case 5:
-                aGame.setEventDice(Game.EventType.values()[2]);
-            case 6:
-                aGame.setEventDice(Game.EventType.values()[3]);
-        }
-        checkBarbarian();
-        checkDice();
-        aGame.setPhase(Game.GamePhase.TurnDiceRolled);
-    }
-
-    private void checkBarbarian(){
-        assert (aGame.getTurnCounter() > 2);
-        if (aGame.getEventDice() == Game.EventType.Barbarian){
-            advanceBarbPosition();
-        }
-    }
-
-    private void advanceBarbPosition(){
-        assert aGame.getBarbarianPosition() > 0;
-        aGame.updateBarbarianPosition();
-        if (aGame.getBarbarianPosition()== 0){
-            barbarianAttack();
-            resetBarbPosition();
-        }
-    }
-
-    private void barbarianAttack(){
-        assert (aGame.getBarbarianPosition() == 0);
-        calculateStrengths();
-        if (aGame.getBarbarianStrength() > aGame.getArmyStrength()){
-            defenseLoss();
-        }
-        defenseVictory();
-    }
-
-    private void calculateStrengths(){
-        aGame.setBarbarianStrength(0);
-        aGame.setArmyStrength(0);
-        for (Map.Entry<String, Intersection> intersection : aGame.getBoard().getIntersections().entrySet()){
-            if (intersection.getValue().getOccupancyFlag()) {
-                if (intersection.getValue().getBuilding() != null){
-                    aGame.setBarbarianStrength(aGame.getBarbarianStrength() + 1);
-                }
-                else if (intersection.getValue().getKnight() != null){
-                    if ((intersection.getValue().getKnight().getState())){
-                        aGame.setArmyStrength(aGame.getArmyStrength() + (intersection.getValue().getKnight()).getStrength());
-                    }
-                }
-            }
-        }
-    }
-
-    private void resetBarbPosition(){
-        aGame.resetBarbarianPosition();
-    }
-
-
-    private void defenseVictory(){
-        //TODO
-    }
-
-    private void defenseLoss(){
-        //TODO
-    }
-
-
-    private void checkDice() {
-        int numberRolled = aGame.getRedDice().add(aGame.getYellowDice());
-        ArrayList<LandHex> tempLandHexes = aGame.getBoard().getLandHexes().get(numberRolled);
-        for (LandHex hex : tempLandHexes) {
-            Queue<Intersection> tempIntersections = hex.getIntersectionNeighbours();
-            for (Intersection intersection : tempIntersections) {
-                if (intersection.getOccupancyFlag()) {
-                    Player owner = getPayee(intersection);
-                    boolean isCity = checkIsCity(intersection);
-                    payout(owner, hex.getTerrainType(), isCity);
-                }
-            }
-        }
-    }
-
-    private Player getPayee(Intersection pIntersection){
-        assert (pIntersection.getBuilding() != null);
-        return pIntersection.getBuilding().getOwner();
-    }
-
-    private boolean checkIsCity(Intersection pIntersection){
-        return (pIntersection.getBuilding() != null && pIntersection.getBuilding().isCity());
-    }
-
-    private void payout(Player pOwner, TerrainType pTerrainType, boolean isCity){
-        if (pTerrainType == TerrainType.GoldMine){
-            if (removeGold()) {
-                pOwner.addGold();
-            }
-        }
-        else {
-            StealableCard.Resource resource = pTerrainType.giveResource();
-            assert(aGame.getResourceCards().get(resource) > 0);
-            pOwner.addResource(resource, 1);
-            removeResource(resource, 1);
-        }
-
-        if (isCity) {
-            StealableCard.Resource resource = pTerrainType.giveResource();
-            if (pTerrainType == TerrainType.Hills || pTerrainType == TerrainType.Fields){
-                assert(aGame.getResourceCards().get(resource) > 0);
-                pOwner.addResource(resource, 1);
-                removeResource(resource, 1);
-            }
-            else if (pTerrainType == TerrainType.GoldMine){
-                if (removeGold()){
-                    pOwner.addGold();
-                }
-            }
-            else{
-                StealableCard.Commodity commodity = pTerrainType.giveCommodity();
-                assert(aGame.getCommodityCards().get(commodity) > 0);
-                pOwner.addCommodity(commodity, 1);
-                removeCommodity(commodity, 1);
-            }
-        }
-    }
-
-    public void setupPayout(){
-        for (Map.Entry<String,Intersection> intersection : aGame.getBoard().getIntersections().entrySet()){
-            if (intersection.getValue().getBuilding() != null && intersection.getValue().getBuilding().isCity()){
-                Player owner = intersection.getValue().getBuilding().getOwner();
-                Intersection cityLocation = intersection.getValue();
-                for(Hex hex : cityLocation.getHexNeighbours()){
-                    TerrainType pTerrainType = hex.getTerrainType();
-                    StealableCard.Resource resource = pTerrainType.giveResource();
-                    owner.addResource(resource, 1);
-                    removeResource(resource, 1);
-                }
-            }
-        }
-    }
-
-    private boolean removeGold(){
-        if (aGame.getGoldBank() >= 2) {
-            aGame.setGoldBank(aGame.getGoldBank() - 2);
-            return true;
-        }
-        return false;
-    }
-
-    private void paySettlement(Player pPlayer){
-        pPlayer.removeResource(StealableCard.Resource.SHEEP, 1);
-        addResource(StealableCard.Resource.SHEEP, 1);
-        pPlayer.removeResource(StealableCard.Resource.WHEAT, 1);
-        addResource(StealableCard.Resource.WHEAT, 1);
-        pPlayer.removeResource(StealableCard.Resource.BRICK, 1);
-        addResource(StealableCard.Resource.BRICK, 1);
-        pPlayer.removeResource(StealableCard.Resource.WOOD, 1);
-        addResource(StealableCard.Resource.WOOD, 1);
-    }
-
-    private void payCity(Player pPlayer){
-        pPlayer.removeResource(StealableCard.Resource.WHEAT, 2);
-        addResource(StealableCard.Resource.WHEAT, 2);
-        pPlayer.removeResource(StealableCard.Resource.ORE, 3);
-        addResource(StealableCard.Resource.ORE, 3);
-    }
-
-    private void payRoad(Player pPlayer){
-        pPlayer.removeResource(StealableCard.Resource.BRICK, 1);
-        addResource(StealableCard.Resource.BRICK, 1);
-        pPlayer.removeResource(StealableCard.Resource.WOOD, 1);
-        addResource(StealableCard.Resource.WOOD, 1);
-    }
-
-    public void placeSettlement(Player pPlayer, Intersection pIntersection){
-        assert(!pIntersection.getOccupancyFlag());
-        assert(checkIntersectionEligibility(pIntersection, pPlayer));
-        assert(checkBuySettlement(pPlayer));
-
-        paySettlement(pPlayer);
-        OwnedBuilding settlement = pPlayer.removeBuilding(Unit.Building.SETTLEMENT);
-        pIntersection.setBuilding(settlement);
-    }
-
-    public void placeCity(Player pPlayer, Intersection pIntersection){
-        assert(pIntersection.getOccupancyFlag());
-        assert(pIntersection.getBuilding() != null && !pIntersection.getBuilding().isCity() && pIntersection.getBuilding().getOwner() == pPlayer);
-        assert(checkBuyCity(pPlayer));
-
-        payCity(pPlayer);
-        OwnedBuilding city = pPlayer.removeBuilding(Unit.Building.CITY);
-        pPlayer.addBuilding(Unit.Building.SETTLEMENT);
-        pIntersection.setBuilding(city);
-    }
-
-    public void placeRoad(Player pPlayer, Edge pEdge){
-        assert(!pEdge.getOccupancyFlag());
-        assert(checkEdgeEligibility(pEdge, pPlayer));
-        assert(checkBuyRoad(pPlayer));
-
-        payRoad(pPlayer);
-        OwnedTransport road = pPlayer.removeTransport(Unit.Transport.ROAD);
-        pEdge.setTransport(road);
-    }
-
-    private boolean checkIntersectionEligibility(Intersection pIntersection, Player pPlayer){
-        boolean eligible1 = true;
-        Queue<Intersection> neighbourIntersections = pIntersection.getIntersectionNeighbours();
-        for (Intersection intersection: neighbourIntersections){    //Iterate through all neighbours to see if they are occupied
-            if (intersection.getOccupancyFlag()){
-                eligible1 = false;
-                break;
-            }
-        }
-
-        Queue<Edge> neighbourEdges = pIntersection.getEdgeNeighbours();
-        boolean eligible2 = false;
-        for (Edge edge: neighbourEdges){
-            if (edge.getOccupancyFlag()){
-                if (edge.getTransport().getOwner() == pPlayer) {
-                    eligible2 = true;
-                    break;
-                }
-            }
-        }
-        return (eligible1 && eligible2);
-    }
-
-    private boolean checkEdgeEligibility(Edge pEdge, Player pPlayer){
-        Queue<Edge> neighbourEdges = pEdge.getEdgeNeighbours();
-        boolean eligible = false;
-        for (Edge edge: neighbourEdges) {
-            if (edge.getOccupancyFlag()) {
-                if (edge.getTransport().getOwner() == pPlayer) {
-                    eligible = true;
-                    break;
-                }
-            }
-        }
-        return eligible;
-    }
-
-    private boolean checkBuySettlement(Player pPlayer) {
-        if (pPlayer.getResourceCards().get(StealableCard.Resource.SHEEP) == 0 ||
-                pPlayer.getResourceCards().get(StealableCard.Resource.ORE) == 0 ||
-                pPlayer.getResourceCards().get(StealableCard.Resource.WOOD) == 0 ||
-                pPlayer.getResourceCards().get(StealableCard.Resource.BRICK) == 0){
-            return false;
-        }
-        else{
-            return true;
-        }
-    }
-
-    private boolean checkBuyCity(Player pPlayer){
-        if (pPlayer.getResourceCards().get(StealableCard.Resource.ORE) < 3 || pPlayer.getResourceCards().get(StealableCard.Resource.WHEAT) < 2){
-            return false;
-        }
-        else{
-            return true;
-        }
-    }
-
-    private boolean checkBuyRoad(Player pPlayer){
-        if (pPlayer.getResourceCards().get(StealableCard.Resource.WOOD) == 0 || pPlayer.getResourceCards().get(StealableCard.Resource.BRICK) == 0){
-            return false;
-        }
-        else{
-            return true;
-        }
-
-    }
-
-    public void setupSettlement(Player pPlayer, Intersection pIntersection){
-        assert (!pIntersection.getOccupancyFlag());
-        assert (checkIntersectionSetupEligibility(pIntersection));
-
-        OwnedBuilding settlement = pPlayer.removeBuilding(Unit.Building.SETTLEMENT);
-        pIntersection.setBuilding(settlement);
-    }
-
-    public void setupCity(Player pPlayer, Intersection pIntersection){
-        assert(!pIntersection.getOccupancyFlag());
-        assert(checkIntersectionSetupEligibility(pIntersection));
-
-        OwnedBuilding city = pPlayer.removeBuilding(Unit.Building.CITY);
-        pIntersection.setBuilding(city);
-    }
-
-    public void setupRoad(Player pPlayer, Edge pEdge){
-        assert(!pEdge.getOccupancyFlag());
-        assert(checkEdgeSetupEligibility(pEdge, pPlayer));
-
-        OwnedTransport road = pPlayer.removeTransport(Unit.Transport.ROAD);
-        pEdge.setTransport(road);
-    }
-
-    private boolean checkIntersectionSetupEligibility(Intersection pIntersection){
-        boolean eligible = true;
-        Queue<Intersection> neighbourIntersections = pIntersection.getIntersectionNeighbours();
-        for (Intersection intersection: neighbourIntersections){    //Iterate through all neighbours to see if they are occupied
-            if (intersection.getOccupancyFlag()){
-                eligible = false;
-                break;
-            }
-        }
-        return eligible;
-    }
-
-    private boolean checkEdgeSetupEligibility(Edge pEdge, Player pPlayer){
-        Queue<Intersection> neighbourIntersections = pEdge.getIntersectionNeighbours();
-        boolean eligible = false;
-        for (Intersection intersection: neighbourIntersections) {
-            if (intersection.getOccupancyFlag()) {
-                if (intersection.getBuilding().getOwner() == pPlayer) {
-                    eligible = true;
-                    break;
-                }
-            }
-        }
-        return eligible;
-    }
-
-    public void playerTrade(Player pPlayer1, Player pPlayer2, HashMap<StealableCard.Resource, Integer> pResources1,
-                            HashMap<StealableCard.Resource, Integer> pResources2,
-                            HashMap<StealableCard.Commodity, Integer> pCommodities1,
-                            HashMap<StealableCard.Commodity, Integer> pCommodities2){
-        new PlayerTrade(pPlayer1, pPlayer2, pResources1, pResources2, pCommodities1, pCommodities2);
-    }
-
-    public void maritimeTrade(Player pPlayer, StealableCard.Resource pResource, int pAmount){
-        new MaritimeTrade(pPlayer, pResource, pAmount);
-    }
-
-    public void endTurn(){
-        aGame.setPhase(Game.GamePhase.TurnSecondPhase);
-        nextPlayer();
-    }
-
-    private void nextPlayer(){
-        aGame.updateTurn();
-    }
+//    private GameManager gameManager = new GameManager();
+//
+//    // MINGS GRAVEYARD
+//
+//
+//    private Game aGame;
+//    int aCount;
+//
+//    private GameManager(){
+//        aCount = 0;
+//    }
+//
+//
+//    public void createGame(int pVPsToWin, ArrayList<String> playerNames){
+//
+//        HashMap<Integer, ArrayList<LandHex>> pLandHexes = new HashMap<Integer, ArrayList<LandHex>>();
+//
+//        for (int k = 2; k < 13; k++){
+//            pLandHexes.put(k, new ArrayList<LandHex>());
+//        }
+//
+//        for (int i = 0; i < 20; i++){
+//            for (int j = 0; j < 20; j++){
+//                if (pHexes[i][j].getTerrainType() != TerrainType.Sea || pHexes[i][j].getTerrainType() != TerrainType.Desert || pHexes[i][j].getTerrainType() != null){
+//                     pLandHexes.get(((LandHex)pHexes[i][j]).getProductionNumber()).add((LandHex)pHexes[i][j]);
+//                }
+//            }
+//        }
+//
+//        HashMap<String, Player> aListofPlayers = createPlayers(playerNames);
+//        GameManager.setPlayerProperties(aListofPlayers);
+//        Game newGame = new Game(pVPsToWin, aListofPlayers, aCount++);
+//        aGame = newGame;
+//    }
+//
+//    public static HashMap<String, Player> createPlayers(ArrayList<String> pUsernames){
+//        HashMap<String, Player> aPlayers = new HashMap<String,Player>();
+//        if (pUsernames.get(0) != null) {
+//            Player p1 = new Player(pUsernames.get(0), Player.Color.Blue);
+//            aPlayers.put(p1.getUsername(), p1);
+//        }
+//        if (pUsernames.get(1) != null) {
+//            Player p2 = new Player(pUsernames.get(1), Player.Color.Orange);
+//            aPlayers.put(p2.getUsername(), p2);
+//        }
+//        if (pUsernames.get(2) != null) {
+//            Player p3 = new Player(pUsernames.get(2), Player.Color.Red);
+//            aPlayers.put(p3.getUsername(), p3);
+//        }
+//        if (pUsernames.get(3) != null) {
+//            Player p4 = new Player(pUsernames.get(3), Player.Color.White);
+//            aPlayers.put(p4.getUsername(), p4);
+//        }
+//        return aPlayers;
+//    }
+//
+//    public static void setPlayerProperties(HashMap<String, Player> pListofPlayers){
+//        Queue<City> allCities = City.getUnits();
+//        Queue<Settlement> allSettlements = Settlement.getUnits();
+//        Queue<Road> allRoads = Road.getUnits();
+//        Queue<Ship> allShips = Ship.getUnits();
+//        Queue<Wall> allWalls = Wall.getUnits();
+//        Queue<BasicKnight> allBasicKnights = BasicKnight.getUnits();
+//        Queue<StrongKnight> allStrongKnights = StrongKnight.getUnits();
+//        Queue<MightyKnight> allMightyKnights = MightyKnight.getUnits();
+//
+//        for (Player player : pListofPlayers.values()){
+//            Queue<City> aCities = new LinkedList<City>();
+//            Queue<Settlement> aSettlements = new LinkedList<Settlement>();
+//            Queue<Road> aRoads = new LinkedList<Road>();
+//            Queue<Ship> aShips = new LinkedList<Ship>();
+//            Queue<Wall> aWalls = new LinkedList<Wall>();
+//            Queue<BasicKnight> aBasicKnights = new LinkedList<BasicKnight>();
+//            Queue<StrongKnight> aStrongKnights = new LinkedList<StrongKnight>();
+//            Queue<MightyKnight> aMightyKnights = new LinkedList<MightyKnight>();
+//
+//            addCitiesToPlayer(allCities, aCities, player);
+//            addSettlementsToPlayer(allSettlements, aSettlements, player);
+//            addRoadsToPlayer(allRoads, aRoads, player);
+//            addShipsToPlayer(allShips, aShips, player);
+//            addWallsToPlayer(allWalls, aWalls, player);
+//            addBasicKnightsToPlayer(allBasicKnights, aBasicKnights, player);
+//            addStrongKnightsToPlayer(allStrongKnights, aStrongKnights, player);
+//            addMightyKnightsToPlayer(allMightyKnights, aMightyKnights, player);
+//        }
+//    }
+//
+//    private static void addCitiesToPlayer(Queue<City> allCities, Queue<City> playerCities, Player pPlayer){
+//        for (int i = 0; i < 4; i++){
+//            playerCities.add(allCities.remove());
+//        }
+//        pPlayer.setCities(playerCities);
+//    }
+//
+//    private static void addSettlementsToPlayer(Queue<Settlement> allSettlements, Queue<Settlement> playerSettlements, Player pPlayer){
+//        for (int i = 0; i < 4; i++){
+//            playerSettlements.add(allSettlements.remove());
+//        }
+//        pPlayer.setSettlements(playerSettlements);
+//    }
+//
+//    private static void addRoadsToPlayer(Queue<Road> allRoads, Queue<Road> playerRoads, Player pPlayer){
+//        for (int i = 0; i < 15; i++){
+//            playerRoads.add(allRoads.remove());
+//        }
+//        pPlayer.setRoads(playerRoads);
+//    }
+//
+//    private static void addShipsToPlayer(Queue<Ship> allShips, Queue<Ship> playerShips, Player pPlayer){
+//        for (int i = 0; i < 15; i++){
+//            playerShips.add(allShips.remove());
+//        }
+//        pPlayer.setShips(playerShips);
+//    }
+//
+//    private static void addWallsToPlayer(Queue<Wall> allWalls, Queue<Wall> playerWalls, Player pPlayer){
+//        for (int i = 0; i < 3; i++){
+//            playerWalls.add(allWalls.remove());
+//        }
+//        pPlayer.setWalls(playerWalls);
+//    }
+//
+//    private static void addBasicKnightsToPlayer(Queue<BasicKnight> allBasicKnights, Queue<BasicKnight> playerBasicKnights, Player pPlayer){
+//        for (int i = 0; i < 2; i++){
+//            playerBasicKnights.add(allBasicKnights.remove());
+//        }
+//        pPlayer.setBasicKnights(playerBasicKnights);
+//    }
+//
+//    private static void addStrongKnightsToPlayer(Queue<StrongKnight> allStrongKnights, Queue<StrongKnight> playerStrongKnights, Player pPlayer){
+//        for (int i = 0; i < 2; i++){
+//            playerStrongKnights.add(allStrongKnights.remove());
+//        }
+//        pPlayer.setStrongKnights(playerStrongKnights);
+//    }
+//
+//    private static void addMightyKnightsToPlayer(Queue<MightyKnight> allMightyKnights, Queue<MightyKnight> playerMightyKnights, Player pPlayer){
+//        for (int i = 0; i < 2; i++){
+//            playerMightyKnights.add(allMightyKnights.remove());
+//        }
+//        pPlayer.setMightyKnights(playerMightyKnights);
+//    }
+//
+//    public static Game getGame(){
+//        return aGame;
+//        //sql query select game where acount = pcount
+//    }
+//
+//    public static Map<String, Player> getPlayers(){
+//        return aGame.getPlayers();
+//    }
+//
+//    public static void rollDice(){
+//        assert (aGame != null);
+//        aGame.setPhase(Game.GamePhase.TurnFirstPhase);
+//        aGame.setRedDice(Game.DiceNumber.values()[(int)(Math.random() * Game.DiceNumber.values().length)]);
+//        aGame.setYellowDice(Game.DiceNumber.values()[(int)(Math.random() * Game.DiceNumber.values().length)]);
+//        int eventIndex = (int)(Math.random() * 6);
+//        switch (eventIndex){
+//            case 1:
+//                aGame.setEventDice(Game.EventType.values()[0]);
+//            case 2:
+//                aGame.setEventDice(Game.EventType.values()[0]);;
+//            case 3:
+//                aGame.setEventDice(Game.EventType.values()[0]);
+//            case 4:
+//                aGame.setEventDice(Game.EventType.values()[1]);
+//            case 5:
+//                aGame.setEventDice(Game.EventType.values()[2]);
+//            case 6:
+//                aGame.setEventDice(Game.EventType.values()[3]);
+//        }
+//
+//        if (aGame.getTurnCounter() > 2) {
+//            checkBarbarian();
+//        }
+//        checkDice();
+//        aGame.setPhase(Game.GamePhase.TurnDiceRolled);
+//    }
+//
+//    private static void checkBarbarian(){
+//        assert (aGame.getTurnCounter() > 2);
+//        if (aGame.getEventDice() == Game.EventType.Barbarian){
+//            advanceBarbPosition();
+//        }
+//    }
+//
+//    private static void advanceBarbPosition(){
+//        assert aGame.getBarbarianPosition() > 0;
+//        aGame.updateBarbarianPosition();
+//        if (aGame.getBarbarianPosition()== 0){
+//            barbarianAttack();
+//            resetBarbPosition();
+//        }
+//    }
+//
+//    private static void barbarianAttack(){
+//        assert (aGame.getBarbarianPosition() == 0);
+//        calculateStrengths();
+//        if (aGame.getBarbarianStrength() > aGame.getArmyStrength()){
+//            defenseLoss();
+//        }
+//        defenseVictory();
+//    }
+//
+//    private static void calculateStrengths(){
+//        aGame.setBarbarianStrength(0);
+//        aGame.setArmyStrength(0);
+//        for (int i = 0; i < 20; i++){
+//            for (int j = 0; j < 20; j++){
+//                if (aGame.getIntersections()[i][j].getOccupancyFlag()) {
+//                    if (aGame.getIntersections()[i][j].getOccupant().getClass() == City.class) {
+//                        aGame.setBarbarianStrength(aGame.getBarbarianStrength() + 1);
+//                    }
+//                    else if (aGame.getIntersections()[i][j].getOccupant().getClass().getSuperclass() == Knight.class){
+//                        if (((Knight)aGame.getIntersections()[i][j].getOccupant()).getState()){
+//                            aGame.setArmyStrength(aGame.getArmyStrength() + ((Knight) aGame.getIntersections()[i][j].getOccupant()).getStrength());
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
+//
+//    private static void resetBarbPosition(){
+//        aGame.resetBarbarianPosition();
+//    }
+//
+//
+//    private static void defenseVictory(){
+//        //TODO
+//    }
+//
+//    private static void defenseLoss(){
+//        //TODO
+//    }
+//
+//
+//    private static void checkDice() {
+//        int numberRolled = aGame.getRedDice().add(aGame.getYellowDice());
+//        ArrayList<LandHex> tempLandHexes = aGame.getLandHexes().get(numberRolled);
+//        for (LandHex hex : tempLandHexes) {
+//            Queue<Intersection> tempIntersections = hex.getIntersectionNeighbours();
+//            for (Intersection intersection : tempIntersections) {
+//                if (intersection.getOccupancyFlag()) {
+//                    Player owner = getPayee(intersection);
+//                    boolean isCity = checkIsCity(intersection);
+//                    payout(owner, hex.getTerrainType(), isCity);
+//                }
+//            }
+//        }
+//    }
+//
+//    private static Player getPayee(Intersection pIntersection){
+//        return pIntersection.getOccupant().getOwner();
+//    }
+//
+//    private static boolean checkIsCity(Intersection pIntersection){
+//        return (pIntersection.getOccupant().getClass() == City.class);
+//    }
+//
+//    private static void payout(Player pOwner, TerrainType pTerrainType, boolean isCity){
+//        if (pTerrainType == TerrainType.GoldMine){
+//            if (removeGold()) {
+//                pOwner.addGold();
+//            }
+//        }
+//        else {
+//            assert(!aGame.getResourceCards().get(pTerrainType.giveResource()).isEmpty());
+//            pOwner.addCard(aGame.getResourceCards().get(pTerrainType.giveResource()).remove());
+//        }
+//
+//        if (isCity) {
+//            if (pTerrainType == TerrainType.Hills || pTerrainType == TerrainType.Fields){
+//                assert(!aGame.getResourceCards().get(pTerrainType.giveResource()).isEmpty());
+//                pOwner.addCard(aGame.getResourceCards().get(pTerrainType.giveResource()).remove());
+//            }
+//            else if (pTerrainType == TerrainType.GoldMine){
+//                if (removeGold()){
+//                    pOwner.addGold();
+//                }
+//            }
+//            else{
+//                assert(!aGame.getCommodityCards().get(pTerrainType.giveCommodity()).isEmpty());
+//                pOwner.addCard(aGame.getCommodityCards().get(pTerrainType.giveCommodity()).remove());
+//            }
+//        }
+//    }
+//
+//    private static boolean removeGold(){
+//        if (aGame.getGoldBank() >= 2) {
+//            aGame.setGoldBank(aGame.getGoldBank() - 2);
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//    public static void placeSettlement(Player pPlayer, Intersection pIntersection){
+//        if (pPlayer != aGame.getCurrentPlayer()){
+//            //do nothing
+//        }
+//        else {
+//            assert (!pIntersection.getOccupancyFlag());
+//            assert (pPlayer.canGetSettlement());
+//            boolean eligible = checkIntersectionEligibility(pIntersection);
+//            assert (eligible);
+//
+//            Settlement settlement = pPlayer.giveSettlement();
+//            pIntersection.setOccupant(settlement);
+//            if (aGame.getPhase() == Game.GamePhase.SetupRoundOne) {
+//                Queue<Hex> neighbours = pIntersection.getHexNeighbours();
+//                for (Hex hex : neighbours) {
+//                    payout(pPlayer, hex.getTerrainType(), false);
+//                }
+//            }
+//        }
+//    }
+//
+//    public static void placeCity(Player pPlayer, Intersection pIntersection){
+//        if (pPlayer != aGame.getCurrentPlayer()){
+//            //do nothing
+//        }
+//        else{
+//            assert(!pIntersection.getOccupancyFlag());
+//            assert(pPlayer.canGetCity());
+//            boolean eligible = checkIntersectionEligibility(pIntersection);
+//            assert (eligible);
+//
+//            City city = pPlayer.giveCity();
+//            pIntersection.setOccupant(city);
+//            if (aGame.getPhase() == Game.GamePhase.SetupRoundTwo) {
+//                Queue<Hex> neighbours = pIntersection.getHexNeighbours();
+//                for (Hex hex : neighbours) {
+//                    payout(pPlayer, hex.getTerrainType(), true);
+//                }
+//            }
+//        }
+//    }
+//
+//    public static void placeRoad(Player pPlayer, Edge pEdge){
+//        if (pPlayer != aGame.getCurrentPlayer()){
+//            //do nothing
+//        }
+//        else{
+//            assert(!pEdge.getOccupancyFlag());
+//            assert(pPlayer.canGetRoad());
+//            assert(checkEdgeEligibility(pEdge));
+//
+//            Road road = pPlayer.giveRoad();
+//            pEdge.setOccupant(road);
+//        }
+//    }
+//
+//    private static boolean checkIntersectionEligibility(Intersection pIntersection){
+//        boolean eligible = true;
+//        Queue<Intersection> neighbourIntersections = pIntersection.getIntersectionNeighbours();
+//        for (Intersection intersection: neighbourIntersections){    //Iterate through all neighbours to see if they are occupied
+//            if (intersection.getOccupancyFlag()){
+//                eligible = false;
+//                break;
+//            }
+//        }
+//        if (aGame.getPhase() != Game.GamePhase.SetupRoundOne && aGame.getPhase()!= Game.GamePhase.SetupRoundTwo){
+//            eligible = checkNonSetupEligibility(pIntersection);
+//        }
+//        return eligible;
+//    }
+//
+//    private static boolean checkEdgeEligibility(Edge pEdge){
+//        boolean eligible = false;
+//        Queue<Intersection> neighbourIntersections = pEdge.getIntersectionNeighbours();
+//        for (Intersection intersection: neighbourIntersections){    //Iterate through all neighbours to see if they are occupied by the current player
+//            if (intersection.getOccupant().getOwner() != aGame.getCurrentPlayer()){
+//                continue;
+//            }
+//            else{
+//                eligible = true;
+//                break;
+//            }
+//        }
+//        if (aGame.getPhase()!= Game.GamePhase.SetupRoundOne && aGame.getPhase()!= Game.GamePhase.SetupRoundTwo){
+//            eligible = checkNonSetupEligibility(pEdge);
+//        }
+//        return eligible;
+//    }
+//
+//    private static boolean checkNonSetupEligibility(Geometry pGeometry){
+//        Queue<Edge> neighbourEdges = pGeometry.getEdgeNeighbours();
+//        boolean eligible = false;
+//        for (Edge edge : neighbourEdges){   //if any of the neighbouring edges have a road belonging to the player, it is eligible
+//            if (edge.getOccupant().getOwner() != aGame.getCurrentPlayer()){
+//                continue;
+//            }
+//            else{
+//                eligible = true;
+//                break;
+//            }
+//        }
+//        return eligible;
+//
+//    }
+//
+//    public static void endTurn(){
+//        aGame.setPhase(Game.GamePhase.TurnSecondPhase);
+//        nextPlayer();
+//    }
+//
+//    private static void nextPlayer(){
+//        aGame.updateQueue();
+//        aGame.updateTurnCounter();
+//    }
 }
 
