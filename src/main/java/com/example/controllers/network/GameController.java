@@ -24,10 +24,42 @@ public class GameController {
 
     private static int placeSettlementAndRoadCounter = 0;
     private static int placeCityAndRoadCounter = 0;
-    private static int currNumPlayers;
+
     private static int currPlayerTurn = 0;
+    private static int currNumPlayers;
+
+    private static final String player1color = "red";
+    private static final String player2color = "yellow";
+    private static final String player3color = "green";
+    private static final String player4color = "blue";
+
     private static final PlayerAndPhase pap = new PlayerAndPhase();
+
     private static int turnCounter = 0;
+
+    public static ArrayList<Player> createPlayers(ArrayList<String> currPlayerList){
+        ArrayList<Player> aPlayers = new ArrayList<Player>();
+        for (int i = 0; i < currPlayerList.size(); i++){
+            if(i == 0) {
+                Player player1 = new Player(currPlayerList.get(i), player1color);
+                aPlayers.add(player1);
+            }
+            else if (i == 1) {
+                Player player2 = new Player(currPlayerList.get(i), player2color);
+                aPlayers.add(player2);
+            }
+            else if (i == 2) {
+                Player player3 = new Player(currPlayerList.get(i), player3color);
+                aPlayers.add(player3);
+            }
+            else if (i == 3) {
+                Player player4 = new Player(currPlayerList.get(i), player4color);
+                aPlayers.add(player4);
+            }
+        }
+        return aPlayers;
+    }
+
     public static void setCurrPlayerList(ArrayList<String> pList){
         for (String s : pList){
             currPlayerList.add(s);
@@ -38,8 +70,7 @@ public class GameController {
         pap.setSetup2(false);
     }
 
-  // FROM NEIGHBOURS BRANCH
- /*   public static void createGame(){
+    public static void createGame(){
         List<String> myColors = new ArrayList<String>();
         myColors.add(0,player1color);
         myColors.add(1,player2color);
@@ -49,7 +80,7 @@ public class GameController {
         System.out.println(aGame.getPlayers().size());
         aGame.setPlayerProperties(aGame.getPlayers());
     }
-*/
+
 
 
     @RequestMapping(value="/game", method= RequestMethod.GET)
@@ -60,19 +91,33 @@ public class GameController {
         model.addAttribute("startingPlayer",currPlayerList.get(0));
 
         for(int i = 0 ; i < currPlayerList.size(); i++){
+
             if (currPlayerList.get(i).matches(name)){
-                String color = GameManager.instance().getGame().getPlayers().get(i).getColor();
+                String color = "";
+
+                if (i == 0){
+                    color = player1color;
+                }else if(i == 1){
+                    color = player2color;
+                }else if(i == 2){
+                    color = player3color;
+                }else if( i== 3){
+                    color = player4color;
+                }
                 model.addAttribute("myColor", color);
             }
+
         }
 
-        for(int i = 0 ; i < currPlayerList.size(); i++){
-            model.addAttribute("player1",currPlayerList.get(i));
-        }
+        model.addAttribute("player1",currPlayerList.get(0));
+        model.addAttribute("player2",currPlayerList.get(1));
+        model.addAttribute("player3",currPlayerList.get(2));
+        //model.addAttribute("player4",currPlayerList.get(3));
 
-        for(int i = 0 ; i < currPlayerList.size(); i++){
-            model.addAttribute("player1_c", GameManager.getGame().getPlayers().get(i).getColor());
-        }
+        model.addAttribute("player1_c", player1color);
+        model.addAttribute("player2_c", player2color);
+        model.addAttribute("player3_c", player3color);
+       // model.addAttribute("player4_c", player4color);
 
         return "game";
     }
