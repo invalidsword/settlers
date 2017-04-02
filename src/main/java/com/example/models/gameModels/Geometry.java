@@ -2,44 +2,44 @@ package com.example.models.gameModels;
 
 
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 
 /**
  * Created by G on 17/02/27.
  */
 public abstract class Geometry {
-    private int aX;
-    private int aY;
+    private final String aId;
+    private final String[] splitId;
 
-    protected Geometry(int x,int y){
-        aX = x;
-        aY = y;
+    protected Geometry(String pId){
+        aId = pId;
+        splitId = pId.split("_");
     }
 
     protected Queue<Hex> HexNeighbours = new LinkedList<Hex>();
     protected Queue<Intersection> IntersectionNeighbours = new LinkedList<Intersection>();
     protected Queue<Edge> EdgeNeighbours = new LinkedList<Edge>();
 
+    public String getId(){return aId;};
 
-    public Coordinate getCoordinates(){return new Coordinate(aX,aY);}
+    public String getPrefix(){
+        return  splitId[0];
+    }
 
-    protected class Coordinate
-    {
-        private int x;
-        private int y;
-        Coordinate(int a,int b){
-            x = a;
-            y = b;
-        }
-        public int getX(){return x;}
-        public int getY(){return y;}
+    public int getX(){
+        return  Integer.parseInt(splitId[1]);
+    }
+
+    public int getY(){
+        return  Integer.parseInt(splitId[2]);
     }
 
     public Queue<Edge> getEdgeNeighbours(){return EdgeNeighbours;};
     public Queue<Intersection> getIntersectionNeighbours(){return IntersectionNeighbours;};
     public Queue<Hex> getHexNeighbours(){return HexNeighbours;};
 
-    public abstract void setEdgeNeighbours(Edge[][] pEdges);
-    public abstract void setHexNeighbours(Hex[][] pHexes);
-    public abstract void setIntersectionNeighbours(Intersection[][] pIntersections);
+    public abstract void setEdgeNeighbours(Map<String,Edge> pEdges);
+    public abstract void setHexNeighbours(Map<String,Hex> pHexes);
+    public abstract void setIntersectionNeighbours(Map<String,Intersection> pIntersections);
 }

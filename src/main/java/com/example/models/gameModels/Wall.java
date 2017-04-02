@@ -13,6 +13,7 @@ public class Wall extends OwnableUnit{
         int maxWalls = 12;
         for (int i = 0; i < maxWalls; i++) {
             Wall newWall = new Wall();
+            aWalls.add(newWall);
         }
     }
 

@@ -1,0 +1,359 @@
+Index: src/main/java/com/example/SettlersApplication.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/SettlersApplication.java	(revision 0c14b6c5271b51342660c6a94a9480f244af573a)
++++ src/main/java/com/example/SettlersApplication.java	(revision )
+@@ -1,11 +1,13 @@
+ package com.example;
+ 
++import com.example.models.Hex;
+ import org.springframework.boot.SpringApplication;
+ import org.springframework.boot.autoconfigure.SpringBootApplication;
+ 
+ @SpringBootApplication
+ public class SettlersApplication {
+ 	/* Application launches here */
++
+ 	public static void main(String[] args) {
+ 		SpringApplication.run(SettlersApplication.class, args);
+ 	}
+Index: src/main/java/com/example/models/HarbourKind.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/models/HarbourKind.java	(revision )
++++ src/main/java/com/example/models/HarbourKind.java	(revision )
+@@ -0,0 +1,8 @@
++package com.example.models;
++
++/**
++ * Created by G on 17/02/27.
++ */
++public enum HarbourKind {
++    None,Generic,Wool,Lumber,Ore,Brick,Grain
++}
+Index: src/main/java/com/example/models/Hex.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/models/Hex.java	(revision )
++++ src/main/java/com/example/models/Hex.java	(revision )
+@@ -0,0 +1,23 @@
++package com.example.models;
++
++/**
++ * Created by G on 17/02/27.
++ */
++public abstract class Hex extends Geometry{
++
++    public Hex(int x,int y) {super(x,y);}
++    public abstract TerrainKind getTerrainType();
++
++    @Override
++    public Hex getHexNeighbours() {
++        return null; // NOT DONE
++    }
++    @Override
++    public Geometry getIntersectionNeighbours() {
++        return null; // NOT DONE
++    }
++    @Override
++    public Edge getEdgeNeighbours() {
++        return null; // NOT DONE
++    }
++}
+Index: src/main/java/com/example/models/Edge.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/models/Edge.java	(revision )
++++ src/main/java/com/example/models/Edge.java	(revision )
+@@ -0,0 +1,48 @@
++package com.example.models;
++
++
++/**
++ * Created by G on 17/02/27.
++ */
++public class Edge extends Geometry{
++
++    private boolean isOccupied;
++    private EdgeUnit aOccupant;
++
++    public Edge(int x, int y)
++    {
++        super(x,y);
++        isOccupied = false;
++    }
++
++    public boolean getOccupancyFlag()
++    {
++       return isOccupied;
++    }
++
++    public void setOccupant(EdgeUnit pOccupant)
++    {
++        aOccupant = pOccupant;
++        isOccupied = true;
++    }
++    public EdgeUnit removeOccupant()
++    {
++        EdgeUnit tempUnit = aOccupant;
++        aOccupant = null;
++        isOccupied = false;
++        return tempUnit;
++    }
++
++    @Override
++    public Hex getHexNeighbours() {
++        return null; // NOT DONE
++    }
++    @Override
++    public Geometry getIntersectionNeighbours() {
++        return null; // NOT DONE
++    }
++    @Override
++    public Edge getEdgeNeighbours() {
++        return null; // NOT DONE
++    }
++}
+Index: src/main/java/com/example/models/LandHex.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/models/LandHex.java	(revision )
++++ src/main/java/com/example/models/LandHex.java	(revision )
+@@ -0,0 +1,51 @@
++package com.example.models;
++
++/**
++ * Created by G on 17/02/27.
++ */
++public class LandHex extends Hex {
++
++    private TerrainKind aKind;
++    private int aProductionNumber;
++    private boolean hasMerchant;
++    private boolean hasRobber;
++
++    public LandHex(int x, int y, int pProd, TerrainKind pKind){
++        super(x,y);
++        aKind = pKind;
++        aProductionNumber = pProd;
++        hasMerchant = false;
++        hasRobber = false;
++    }
++
++    public boolean getRobberFlag(){
++        return hasRobber;
++    }
++
++    public void updateRobberFlag()
++    {
++        if(hasRobber==true)
++            hasRobber = false;
++        else
++            hasRobber = true;
++    }
++
++    public boolean getMerchantFlag(){
++        return hasMerchant;
++    }
++
++    public void updateMerchantFlag()
++    {
++        if(hasMerchant==true)
++            hasMerchant = false;
++        else
++            hasMerchant = true;
++    }
++
++    @Override
++    public TerrainKind getTerrainType() {
++        return aKind;
++    }
++
++
++}
+Index: src/main/java/com/example/models/SeaHex.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/models/SeaHex.java	(revision )
++++ src/main/java/com/example/models/SeaHex.java	(revision )
+@@ -0,0 +1,33 @@
++package com.example.models;
++
++/**
++ * Created by G on 17/02/27.
++ */
++public class SeaHex extends Hex {
++
++    private boolean hasPirate;
++
++    public SeaHex(int x, int y){
++        super(x,y);
++        hasPirate = false;
++    }
++
++    public boolean getPirateFlag(){
++        return hasPirate;
++    }
++
++    public void updatePirateFlag()
++    {
++        if(hasPirate==true)
++            hasPirate = false;
++        else
++            hasPirate = true;
++    }
++
++    @Override
++    public TerrainKind getTerrainType() {
++        return TerrainKind.Sea;
++    }
++
++
++}
+Index: src/main/java/com/example/models/Intersection.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/models/Intersection.java	(revision )
++++ src/main/java/com/example/models/Intersection.java	(revision )
+@@ -0,0 +1,47 @@
++package com.example.models;
++
++/**
++ * Created by G on 17/02/27.
++ */
++public class Intersection extends Geometry {
++
++    private HarbourKind aHarbour;
++    private IntersectionUnit aOccupant;
++    private boolean isOccupied;
++
++
++    public Intersection(int x, int y,HarbourKind pHarbour)
++    {
++        super(x,y);
++        aHarbour = pHarbour;
++        isOccupied = false;
++    }
++
++    public boolean getOccupancyFlag(){return isOccupied;}
++
++    public void setOccupant(IntersectionUnit pOccupant)
++    {
++        aOccupant = pOccupant;
++        isOccupied = true;
++    }
++    public IntersectionUnit removeOccupant()
++    {
++        IntersectionUnit tempUnit = aOccupant;
++        aOccupant = null;
++        isOccupied = false;
++        return tempUnit;
++    }
++
++    @Override
++    public Hex getHexNeighbours() {
++        return null; // NOT DONE
++    }
++    @Override
++    public Geometry getIntersectionNeighbours() {
++        return null; // NOT DONE
++    }
++    @Override
++    public Edge getEdgeNeighbours() {
++        return null; // NOT DONE
++    }
++}
+Index: src/main/java/com/example/models/StealableKind.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/models/StealableKind.java	(revision )
++++ src/main/java/com/example/models/StealableKind.java	(revision )
+@@ -0,0 +1,8 @@
++package com.example.models;
++
++/**
++ * Created by G on 17/02/27.
++ */
++public enum StealableKind {
++        Wool,Lumber,Ore,Brick,Grain,Coin,Cloth,Paper
++}
+Index: src/main/java/com/example/models/Geometry.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/models/Geometry.java	(revision )
++++ src/main/java/com/example/models/Geometry.java	(revision )
+@@ -0,0 +1,27 @@
++package com.example.models;
++
++/**
++ * Created by G on 17/02/27.
++ */
++public abstract class Geometry {
++    int aX;
++    int aY;
++    public Geometry(int x,int y){aX = x; aY = y;}
++
++    public Coordinate getCoordinates(){return new Coordinate(aX,aY);}
++
++    protected class Coordinate
++    {
++        int x;
++        int y;
++        Coordinate(int a,int b){
++            x = a;
++            y = b;
++        }
++        public int getX(){return x;}
++        public int getY(){return y;}
++    }
++    public abstract Edge getEdgeNeighbours();
++    public abstract Geometry getIntersectionNeighbours();
++    public abstract Hex getHexNeighbours();
++}
+Index: src/main/java/com/example/models/TerrainKind.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/models/TerrainKind.java	(revision )
++++ src/main/java/com/example/models/TerrainKind.java	(revision )
+@@ -0,0 +1,8 @@
++package com.example.models;
++
++/**
++ * Created by G on 17/02/27.
++ */
++public enum TerrainKind {
++        Sea,Desert,Pasture,Forest,Mountains,Hills,Fields,GoldMine,Quarry
++}
+Index: src/main/java/com/example/models/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/com/example/models/User.java	(revision 0c14b6c5271b51342660c6a94a9480f244af573a)
++++ src/main/java/com/example/models/User.java	(revision )
+@@ -2,4 +2,5 @@
+ 
+ 
+ public class User {
++
+ }

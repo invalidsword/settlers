@@ -7,7 +7,7 @@ import java.util.*;
  */
 public abstract class OwnableUnit {
     private Player aOwner;
-    private Player.Color aColor;
+    private String aColor;
 
     public void setOwner(Player pOwner)
     {

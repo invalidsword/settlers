@@ -10,11 +10,11 @@ public enum TerrainType {
                         case Mountains:
                                 return ResourceCard.ResourceType.Ore;
                         case Forest:
-                                return ResourceCard.ResourceType.Lumber;
+                                return ResourceCard.ResourceType.Wood;
                         case Pasture:
-                                return ResourceCard.ResourceType.Wool;
+                                return ResourceCard.ResourceType.Sheep;
                         case Fields:
-                                return ResourceCard.ResourceType.Grain;
+                                return ResourceCard.ResourceType.Wheat;
                         case Hills:
                                 return ResourceCard.ResourceType.Brick;
                 }

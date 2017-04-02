@@ -185,6 +185,7 @@ input[type="checkbox"] {
     font-family: 'IM Fell English SC', serif;
 }
 
+/*dices start*/
 .die1{
     float: left;
     background: darkred;
@@ -220,31 +221,158 @@ input[type="checkbox"] {
     color: black;
     margin: 5px;
 }
-
-.turn-btn {
-    background-color: lightcoral;
-    border: groove pink;
-    border-radius: 25px;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    width: 300px;
-}
-
-.turn-btn:hover {
-    background: red;
-}
+/*dices end*/
 
 .dropdown {
     position: fixed;
 }
+
+/*turn button start*/
+/* Pulse Grow */
+@-webkit-keyframes hvr-pulse-grow {
+    to {
+        -webkit-transform: scale(1.1);
+        transform: scale(1.1);
+    }
+}
+@keyframes hvr-pulse-grow {
+    to {
+        -webkit-transform: scale(1.1);
+        transform: scale(1.1);
+    }
+}
+.hvr-pulse-grow {
+    position: fixed;
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    box-shadow: 0 0 1px transparent;
+    background-color: lightcoral;
+    border: groove #2c313a;
+    color: white;
+    border-radius: 25px;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.hvr-pulse-grow:hover, .hvr-pulse-grow:focus, .hvr-pulse-grow:active {
+    position: fixed;
+    -webkit-animation-name: hvr-pulse-grow;
+    animation-name: hvr-pulse-grow;
+    -webkit-animation-duration: 0.3s;
+    animation-duration: 0.3s;
+    -webkit-animation-timing-function: linear;
+    animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-direction: alternate;
+    animation-direction: alternate;
+    background: lightseagreen;
+}
+/*turn button end*/
+
+/*player turn start*/
+@-webkit-keyframes turnWabble {
+    to {
+        -webkit-transform: scale(1.1);
+        transform: scale(1.1);
+    }
+}
+@keyframes turnWabble {
+    to {
+        -webkit-transform: scale(1.1);
+        transform: scale(1.1);
+    }
+}
+.turnWabble {
+    position: fixed;
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    box-shadow: 0 0 1px transparent;
+    background-color: lightcoral;
+    border: groove #2c313a;
+    color: white;
+    border-radius: 25px;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+}
+.turnWabble:focus, .turnWabble:enabled {
+    position: fixed;
+    -webkit-animation-name: turnWabble;
+    animation-name: turnWabble;
+    -webkit-animation-duration: 0.3s;
+    animation-duration: 0.3s;
+    -webkit-animation-timing-function: linear;
+    animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-direction: alternate;
+    animation-direction: alternate;
+    background: lightseagreen;
+}
+/*player turn end*/
+
+/*RollDice start*/
+.btn-3d {
+    width: 100px;
+    height: 50px;
+    position: relative;
+    display: inline-block;
+    font-size: 22px;
+    padding: 0%;
+    color: white;
+    margin-left: 46.6%;
+    margin-top: 0%;
+    border-radius: 6px;
+    border-color: #e74c3c;
+    text-align: center;
+    transition: top .01s linear;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+}
+.btn-3d.red:hover {
+    background-color: #e74c3c;
+}
+
+.btn-3d:active {
+    top: 9px;
+}
+
+/* 3D button colors */
+.btn-3d.red {
+    background-color: #e74c3c;
+    box-shadow: 0 0 0 1px #c63702 inset,
+    0 0 0 2px rgba(255,255,255,0.15) inset,
+    0 8px 0 0 #C24032,
+    0 8px 0 1px rgba(0,0,0,0.4),
+    0 8px 8px 1px rgba(0,0,0,0.5);
+}
+.btn-3d.red:active {
+    box-shadow: 0 0 0 1px #c63702 inset,
+    0 0 0 2px rgba(255,255,255,0.15) inset,
+    0 0 0 1px rgba(0,0,0,0.4);
+}
+/*RollDice end*/
 
 .about_us p{
     font-size: 30px;
 }
 .about_us .row{
     margin: 0px 200px 0px 200px;
+}
+
+svg{
+    display: block;
+    margin: auto;
+}
+
+svg{
+    display: block;
+    margin: auto;
 }

@@ -17,6 +17,7 @@ public class City extends IntersectionUnit {
         int maxCities = 16;
         for (int i = 0; i < maxCities; i++) {
             City newCity = new City();
+            aCities.add(newCity);
         }
     }
 

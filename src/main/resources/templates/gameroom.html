@@ -17,16 +17,11 @@
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="#">Lords of Catan</a>
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">ABOUT US</a></li>
+                <li><a th:href="@{/logout}" >Logout</a></li>
             </ul>
         </div>
     </div>
@@ -45,16 +40,13 @@
                         <div class="panel-body text-center" style="height: 500px;">
                             <h1>Player List</h1>
                             <div class="scroll">
+                                
+                                <!--/*@thymesVar id="playerList" type="com.example.controllers.network.GameRoomController.playerList"*/-->
+                                <tr th:each="p : ${playerList}">
+                                    <button type="button" class="player-btn" th:text="${p}"></button>
+                                </tr>
                                 <form id="playerlist">
-                                   <!-- <button type="button" class="player-btn">HaeChan</button>
-                                    <button type="button" class="player-btn">George</button>
-                                    <button type="button" class="player-btn">Dale</button>
-                                    <button type="button" class="player-btn">Ming</button>
-                                    <button type="button" class="player-btn">Billy</button>
-                                    <button type="button" class="player-btn">Bernard</button>
-                                    <button type="button" class="player-btn">Jorg</button>
-                                    <button type="button" class="player-btn">Nirmal</button>
-                                    <button type="button" class="player-btn">Vybihal</button>-->
+
                                 </form>
                             </div>
                         </div>
@@ -62,6 +54,7 @@
                     <div class="player-box col-sm-8" style="padding: 0px; margin: 0px;">
                         <div class="panel-body text-center" style="height: 500px;">
                             <h1>Gameroom name</h1>
+                            <a id="gameroom" th:href="@{/game}">Join Game!</a>
                             <table class="table table-striped">
                                 <tbody id="connections">
                                 </tbody>
@@ -104,7 +97,7 @@
 
 <!-- Footer -->
 <footer class="container-fluid bg-4 text-center">
-    <p>&copy; 2017 <a target="_blank" href="https://github.com/comp307/speakup">Lords of Catan</a> | All rights reserved
+    <p>&copy; 2017 <a target="_blank" href="https://github.com/invalidsword/settlers">Lords of Catan</a> | All rights reserved
     </p>
 </footer>
 

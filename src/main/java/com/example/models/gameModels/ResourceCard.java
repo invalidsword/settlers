@@ -8,7 +8,7 @@ import java.util.*;
 public class ResourceCard extends StealableCard{
     private static final HashMap<ResourceType, Queue<ResourceCard>> aResources = new HashMap<ResourceType, Queue<ResourceCard>>();
     public enum ResourceType implements StealableCard.StealableType {
-        Wool,Lumber,Ore,Brick,Grain
+        Sheep,Wood,Ore,Brick,Wheat
     }
 
     static{

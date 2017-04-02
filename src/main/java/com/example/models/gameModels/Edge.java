@@ -1,6 +1,8 @@
 package com.example.models.gameModels;
 
 
+import java.util.Map;
+
 /**
  * Created by G on 17/02/27.
  */
@@ -9,9 +11,9 @@ public class Edge extends Geometry{
     private boolean isOccupied;
     private EdgeUnit aOccupant;
 
-    public Edge(int x, int y)
+    public Edge(String pId)
     {
-        super(x,y);
+        super(pId);
         isOccupied = false;
     }
 
@@ -29,6 +31,7 @@ public class Edge extends Geometry{
         aOccupant = pOccupant;
         isOccupied = true;
     }
+
     public EdgeUnit removeOccupant()
     {
         EdgeUnit tempUnit = aOccupant;
@@ -37,63 +40,131 @@ public class Edge extends Geometry{
         return tempUnit;
     }
 
-    public void setEdgeNeighbours(Edge[][] pEdges){
-        int x = this.getCoordinates().getX();
-        int y = this.getCoordinates().getY();
+    @Override
+    public void setEdgeNeighbours(Map<String,Edge> pEdges){
+        final int x = getX();
+        final int xm = x-1;
+        final int xp = x+1;
 
-        if(x%2==0) { // EDGES ARE VERTICAL
-            EdgeNeighbours.add(pEdges[x+1][y+1]);
-            EdgeNeighbours.add(pEdges[x+1][y-1]);
-            EdgeNeighbours.add(pEdges[x-1][y+1]);
-            EdgeNeighbours.add(pEdges[x-1][y-1]);
+        final int y = getY();
+        final int ym = y-1;
+        final int yp = y+1;
+
+        String id1;
+        String id2;
+        String id3;
+        String id4;
+
+        switch (getPrefix()){
+            case "e1": id2 = "e2_"+x+"_"+y;
+                id1 = "e2_"+x+"_"+ym;
+                id3 = "e3_"+x+"_"+ym;
+                id4 = "e3_"+xm+"_"+y;
+                break;
+
+            case "e2":  id2 = "e1_"+x+"_"+y;
+                id1 = "e1_"+x+"_"+yp;
+                id3 = "e3_"+x+"_"+y;
+                id4 = "e3_"+xm+"_"+y;
+                break;
+
+            case "e3":  id2 = "e2_"+x+"_"+y;
+                id1 = "e2_"+xp+"_"+y;
+                id3 = "e1_"+x+"_"+yp;
+                id4 = "e1_"+xp+"_"+y;
+                break;
+
+            default: id2 = "blah";
+                id1 = "blah";
+                id3 = "blah";
+                id4 = "blah";
+                //will return null
         }
-        else {
-            EdgeNeighbours.add(pEdges[x-2][y]);
-            EdgeNeighbours.add(pEdges[x+2][y]);
-            if(pEdges[x+1][y+1]==null){ // EDGES RIGHT SIDE IS DOWN
-                EdgeNeighbours.add(pEdges[x - 1][y+1]);
-                EdgeNeighbours.add(pEdges[x + 1][y-1]);
-            }
-            else {  // EDGES LEFT SIDE IS DOWN
-                EdgeNeighbours.add(pEdges[x - 1][y-1]);
-                EdgeNeighbours.add(pEdges[x + 1][y+1]);
-            }
+          //  System.out.println("THIS: "+getId());
+
+        if(pEdges.get(id1)!=null) {
+        //    System.out.println("    Edge "+id1);
+            EdgeNeighbours.add(pEdges.get(id1));
         }
+        if(pEdges.get(id2)!=null){
+        //    System.out.println("    Edge "+id2);
+            EdgeNeighbours.add(pEdges.get(id2));
+        }
+        if(pEdges.get(id3)!=null) {
+        //    System.out.println("    Edge "+id3);
+            EdgeNeighbours.add(pEdges.get(id3));
+        }
+        if(pEdges.get(id4)!=null) {
+        //    System.out.println("    Edge "+id4);
+            EdgeNeighbours.add(pEdges.get(id4));
+        }
+
     }
+    @Override
+    public void setHexNeighbours(Map<String,Hex> pHexes){
+        final int x = getX();
+        final int xm = x-1;
+        final int xp = x+1;
 
-    public void setHexNeighbours(Hex[][] pHexes){
-        int x = this.getCoordinates().getX();
-        int y = this.getCoordinates().getY();
+        final int y = getY();
+        final int ym = y-1;
+        final int yp = y+1;
 
-        if(x%2==0) { // EDGES ARE VERTICAL
-            x=x/2;
-            y=y/2;
-            HexNeighbours.add(pHexes[x-1][y]);
-            HexNeighbours.add(pHexes[x+1][y]);
+        String id1 = "h_"+x+"_"+y;
+        String id2;
+        switch (getPrefix()){
+            case "e1": id2 = "h_"+xm+"_"+y; break;
+
+            case "e2": id2 = "h_"+xm+"_"+yp; break;
+
+            case "e3": id2 = "h_"+x+"_"+yp; break;
+
+            default: id2 = "blah"; //will return null
         }
-        else if( ((x+1)/2)%2==0&&((y+1)/2)%2==0 || ((x+1)/2)%2==1&&((y+1)/2)%2==1){ // EDGES RIGHT SIDE IS DOWN
-            HexNeighbours.add(pHexes[(x-1)/2][(y-1)/2]);
-            HexNeighbours.add(pHexes[(x+1)/2][(y+1)/2]);
+        if(pHexes.get(id1)!=null) {
+            HexNeighbours.add(pHexes.get(id1));
+        //    System.out.println("    Hex "+id1);
         }
-        else {  // EDGES LEFT SIDE IS DOWN
-            HexNeighbours.add(pHexes[(x+1)/2][(y-1)/2]);
-            HexNeighbours.add(pHexes[(x-1)/2][(y+1)/2]);
+        if(pHexes.get(id2)!=null) {
+            HexNeighbours.add(pHexes.get(id2));
+        //    System.out.println("    Hex "+id2);
         }
     }
 
     @Override
-    public void setIntersectionNeighbours(Intersection[][] pIntersections){
-        int x = this.getCoordinates().getX();
-        int y = this.getCoordinates().getY();
-        if(x%2==0) { // EDGES ARE VERTICAL
-            x=x/2;
-            y=y/2;
-            IntersectionNeighbours.add(pIntersections[x][y]);
-            IntersectionNeighbours.add(pIntersections[x][y-1]);
+    public void setIntersectionNeighbours(Map<String,Intersection> pIntersections) {
+        final int x = getX();
+        final int xm = x-1;
+        final int xp = x+1;
+
+        final int y = getY();
+        final int ym = y-1;
+        final int yp = y+1;
+
+        String id1;
+        String id2;
+        switch (getPrefix()){
+            case "e1": id2 = "i3_"+x+"_"+y;
+                       id1 = "i4_"+x+"_"+y;
+                       break;
+
+            case "e2": id2 = "i3_"+x+"_"+y;
+                       id1 = "i4_"+x+"_"+yp;
+                       break;
+
+            case "e3": id2 = "i3_"+xp+"_"+y;
+                       id1 = "i4_"+x+"_"+yp;
+                       break;
+            default: id2 = "blah";
+                     id1 = "blah";   //will return null
         }
-        else{ // EDGES ARE HORIZONTAL
-            IntersectionNeighbours.add(pIntersections[(x+1)/2][y]);
-            IntersectionNeighbours.add(pIntersections[(x+1)/2-1][y]);
+        if(pIntersections.get(id1)!=null) {
+            IntersectionNeighbours.add(pIntersections.get(id1));
+        //    System.out.println("    Intersection "+id1);
+        }
+        if(pIntersections.get(id2)!=null) {
+            IntersectionNeighbours.add(pIntersections.get(id2));
+        //    System.out.println("    Intersection "+id2);
         }
     }
 }

@@ -5,8 +5,8 @@ package com.example.models.gameModels;
  */
 public class SeaHex extends Hex {
 
-    public SeaHex(int x, int y){
-        super(x,y);
+    public SeaHex(String pId){
+        super(pId);
     }
 
     @Override

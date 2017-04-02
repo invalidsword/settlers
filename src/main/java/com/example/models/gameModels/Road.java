@@ -12,6 +12,7 @@ public final class Road extends EdgeUnit {
         int maxRoads = 60;
         for(int i = 0; i < maxRoads; i++){
             Road newRoad = new Road();
+            aRoads.add(newRoad);
         }
     }
 

@@ -10,8 +10,8 @@ public class LandHex extends Hex {
     private boolean hasMerchant;
     private boolean hasRobber;
 
-    public LandHex(int x, int y, int pProductionNumber, TerrainType pTerrainType){
-        super(x,y);
+    public LandHex(String pId, int pProductionNumber, TerrainType pTerrainType){
+        super(pId);
         aTerrainType = pTerrainType;
         aProductionNumber = pProductionNumber;
         hasMerchant = false;

@@ -1,6 +1,8 @@
 //<![CDATA[
 var stompClient = null;
+$("#gameroom").hide();
 connect();
+
 
 function setConnected(connected) {
     //$("#connect").prop("disabled", connected);
@@ -14,9 +16,12 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/gameroom', function (str) {
+        stompClient.subscribe('/topic/gameroom', function (grv) {
            // showJoinedUser(JSON.parse(str.body).content);
-            showJoinedUser(str.body);
+            console.log(grv);
+            showJoinedUser(JSON.parse(grv.body));
+
+            //showJoinedUser(grv.body)
         });
     });
 }
@@ -26,9 +31,13 @@ function go(){
     stompClient.send("/app/ready",{},{});
 }
 
-function showJoinedUser(user){
+function showJoinedUser(grv){
+    //$("#playerlist").append("<button type=\"button\" class=\"player-btn\">"+you+" has connected!</button>");
+    $("#playerlist").append("<button type=\"button\" class=\"player-btn\">"+grv.name+" has connected!</button>");
 
-    $("#playerlist").append("<button type=\"button\" class=\"player-btn\">"+user+" has connected!</button>");
+    if(grv.numJoined == 3){
+        $("#gameroom").show();
+    }
 
 }
 

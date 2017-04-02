@@ -12,6 +12,7 @@ public class Settlement extends IntersectionUnit {
         int maxSettlements = 16;
         for (int i = 0; i < maxSettlements; i++) {
             Settlement newSettlement = new Settlement();
+            aSettlements.add(newSettlement);
         }
     }
 

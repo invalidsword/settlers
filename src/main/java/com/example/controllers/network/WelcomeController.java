@@ -17,7 +17,7 @@ public class WelcomeController {
 
     @RequestMapping(value="/", method=RequestMethod.GET)
     public String welcome(Login login, Model model) {
-      //  model.addAttribute("message",userRepository.getByUsername("billy").getUsername());
+
         return "home";
     }
 

@@ -40,8 +40,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/")
                 .permitAll()
+                .defaultSuccessUrl("/gameroom.html", true)
                 .and()
-                .csrf();
+                .csrf()
+                ;
     }
 
     @Bean(name="passwordEncoder")

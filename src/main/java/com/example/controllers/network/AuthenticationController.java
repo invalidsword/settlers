@@ -6,8 +6,11 @@ import com.example.repositories.UserRepository;
 import com.example.repositories.UserRole;
 import com.example.repositories.UserRolesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 
@@ -42,27 +47,14 @@ public class AuthenticationController {
         return "home";
     }
 
-    /*@RequestMapping(value="/", method= RequestMethod.POST)
-    public String login(Login login, Model model)
-    {
-
-        try {
-            User loginUser = userRepository.getByUsername(login.getUsername());
-            if(loginUser.comparePassword(login.getPassword()))
-            {
-                return "redirect:/lobby";
-            }
+    @RequestMapping(value="/logout", method = RequestMethod.GET)
+    public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null){
+            new SecurityContextLogoutHandler().logout(request, response, auth);
         }
-        catch (NullPointerException e)
-        {
-            login.setValidStatus(false);
-            return "home";
-        }
-
-        login.setValidStatus(false);
-        return "home";
-    }*/
-
+        return "redirect:/login?logout";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
+    }
 
 
     @RequestMapping(value = "/register", method = RequestMethod.GET)
@@ -79,6 +71,7 @@ public class AuthenticationController {
         {
             return "register";
         }
+
         String confirm = register.getConfirm();
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(register.getPassword());
@@ -89,8 +82,6 @@ public class AuthenticationController {
         UserRole newRole = new UserRole(newUser, "ROLE_USER");
         userRolesRepository.save(newRole);
 
-
-        model.addAttribute("message", register.getUsername());
         return "redirect:/";
     }
 

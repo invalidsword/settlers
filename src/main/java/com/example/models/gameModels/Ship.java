@@ -12,6 +12,7 @@ public class Ship extends EdgeUnit{
         int maxShips = 60;
         for(int i = 0; i < maxShips; i++){
             Ship newShip = new Ship();
+            aShips.add(newShip);
         }
     }
 

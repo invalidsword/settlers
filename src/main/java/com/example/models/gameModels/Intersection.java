@@ -1,6 +1,6 @@
 package com.example.models.gameModels;
 
-import java.util.Queue;
+import java.util.Map;
 
 /**
  * Created by G on 17/02/27.
@@ -12,9 +12,9 @@ public class Intersection extends Geometry {
     private boolean isOccupied;
 
 
-    public Intersection(int x, int y,HarbourType pHarbour)
+    public Intersection(String pId,HarbourType pHarbour)
     {
-        super(x,y);
+        super(pId);
         aHarbour = pHarbour;
         isOccupied = false;
     }
@@ -41,53 +41,139 @@ public class Intersection extends Geometry {
     }
 
     @Override
-    public void setEdgeNeighbours(Edge[][] pEdges){
-        int x = this.getCoordinates().getX();
-        int y = this.getCoordinates().getY();
+    public void setEdgeNeighbours(Map<String,Edge> pEdges){
+        final int x = getX();
+        final int xm = x-1;
+        final int xp = x+1;
 
-        EdgeNeighbours.add(pEdges[x*2+1][y*2+1]);
-        EdgeNeighbours.add(pEdges[x*2-1][y*2+1]);
-        if(x%2==0&&y%2==0 || x%2==1&&y%2==1) { //INTERSECTION UPWARDS
-            EdgeNeighbours.add(pEdges[x*2][y*2+2]);
+        final int y = getY();
+        final int ym = y-1;
+        final int yp = y+1;
+
+        String id1;
+        String id2;
+        String id3;
+
+        switch (getPrefix()){
+            case "i3": id2 = "e1_"+x+"_"+y;
+                id1 = "e2_"+x+"_"+y;
+                id3 = "e3_"+xm+"_"+y;
+                break;
+
+            case "i4":  id2 = "e1_"+x+"_"+y;
+                id1 = "e2_"+x+"_"+ym;
+                id3 = "e3_"+x+"_"+ym;
+                break;
+
+            default: id2 = "blah";
+                id1 = "blah";
+                id3 = "blah";
+                //will return null
         }
-        else { //INTERSECTION DOWNWARDS
-            EdgeNeighbours.add(pEdges[x*2][y*2]);
+
+        if(pEdges.get(id1)!=null) {
+            EdgeNeighbours.add(pEdges.get(id1));
+        //    System.out.println("    Edge "+ id1);
+        }
+        if(pEdges.get(id2)!=null) {
+            EdgeNeighbours.add(pEdges.get(id2));
+        //    System.out.println("    Edge "+ id2);
+        }
+        if(pEdges.get(id3)!=null) {
+            EdgeNeighbours.add(pEdges.get(id3));
+        //    System.out.println("    Edge " + id3);
         }
     }
 
     @Override
-    public void setHexNeighbours(Hex[][] pHexes ){
-        int x = this.getCoordinates().getX();
-        int y = this.getCoordinates().getY();
+    public void setHexNeighbours(Map<String,Hex> pHexes){
+        final int x = getX();
+        final int xm = x-1;
+        final int xp = x+1;
 
-        if(x%2==0&&y%2==0 || x%2==1&&y%2==1) { //INTERSECTION UPWARDS
-            HexNeighbours.add(pHexes[x][y]);
-            HexNeighbours.add(pHexes[x+1][y+1]);
-            HexNeighbours.add(pHexes[x-1][y+1]);
+        final int y = getY();
+        final int ym = y-1;
+        final int yp = y+1;
+
+        String id1;
+        String id2;
+        String id3;
+
+        switch (getPrefix()){
+            case "i3": id2 = "h_"+xm+"_"+yp;
+                id1 = "h_"+x+"_"+y;
+                id3 = "h_"+xm+"_"+y;
+                break;
+
+            case "i4":  id2 = "h_"+x+"_"+y;
+                id1 = "h_"+xm+"_"+y;
+                id3 = "h_"+x+"_"+ym;
+                break;
+
+            default: id2 = "blah";
+                id1 = "blah";
+                id3 = "blah";
+                //will return null
         }
-        else { //INTERSECTION DOWNWARDS
-            HexNeighbours.add(pHexes[x][y+1]);
-            HexNeighbours.add(pHexes[x+1][y]);
-            HexNeighbours.add(pHexes[x-1][y]);
+
+        if(pHexes.get(id1)!=null) {
+            HexNeighbours.add(pHexes.get(id1));
+        //    System.out.println("    Hex "+ id1);
+        }
+        if(pHexes.get(id2)!=null) {
+            HexNeighbours.add(pHexes.get(id2));
+        //    System.out.println("    Hex "+ id2);
+
+        }
+        if(pHexes.get(id3)!=null) {
+            HexNeighbours.add(pHexes.get(id3));
+        //    System.out.println("    Hex "+ id3);
         }
     }
 
     @Override
-    public void setIntersectionNeighbours(Intersection[][] pIntersections){
-        int x = this.getCoordinates().getX();
-        int y = this.getCoordinates().getY();
+    public void setIntersectionNeighbours(Map<String,Intersection> pIntersections){
+        final int x = getX();
+        final int xm = x-1;
+        final int xp = x+1;
 
-        IntersectionNeighbours.add(pIntersections[x+1][y]);
-        IntersectionNeighbours.add(pIntersections[x-1][y]);
+        final int y = getY();
+        final int ym = y-1;
+        final int yp = y+1;
 
-        if(x%2==0&&y%2==0 || x%2==1&&y%2==1) { //INTERSECTION UPWARDS
+        String id1;
+        String id2;
+        String id3;
 
-            IntersectionNeighbours.add(pIntersections[x][y+1]);
+        switch (getPrefix()){
+            case "i3": id2 = "i4_"+xm+"_"+yp;
+                id1 = "i4_"+x+"_"+y;
+                id3 = "i4_"+x+"_"+yp;
+                break;
+
+            case "i4":  id2 = "i3_"+x+"_"+y;
+                id1 = "i3_"+x+"_"+ym;
+                id3 = "i3_"+xp+"_"+ym;
+                break;
+
+            default: id2 = "blah";
+                id1 = "blah";
+                id3 = "blah";
+                //will return null
         }
-        else { //INTERSECTION DOWNWARDS
-            IntersectionNeighbours.add(pIntersections[x][y-1]);
-        }
 
+        if(pIntersections.get(id1)!=null) {
+            IntersectionNeighbours.add(pIntersections.get(id1));
+        //    System.out.println("    Intersection "+ id1);
+        }
+        if(pIntersections.get(id2)!=null) {
+            IntersectionNeighbours.add(pIntersections.get(id2));
+        //    System.out.println("    Intersection "+ id2);
+        }
+        if(pIntersections.get(id3)!=null) {
+            IntersectionNeighbours.add(pIntersections.get(id3));
+        //    System.out.println("    Intersection "+ id3);
+        }
     }
 
 }
