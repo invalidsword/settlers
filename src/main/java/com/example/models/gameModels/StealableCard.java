@@ -1,18 +1,18 @@
 package com.example.models.gameModels;
 
-/**
- * Created by G on 17/03/02.
- */
-public abstract class StealableCard extends Card {
-    private final StealableType aStealableType;
-    public StealableType getType(){
-        return aStealableType;
-    }
+public class StealableCard{
+    public enum Resource{
+        SHEEP, WOOD, ORE, BRICK, WHEAT;
 
-    protected StealableCard(StealableType pStealableType){
-        aStealableType = pStealableType;
+        public static int maxResources(){
+            return 19;
+        }
     }
+    public enum Commodity{
+        COIN, CLOTH, PAPER;
 
-    public interface StealableType {
+        public static int maxCommodities(){
+            return 12;
+        }
     }
 }

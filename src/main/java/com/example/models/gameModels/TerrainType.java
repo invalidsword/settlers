@@ -5,30 +5,30 @@ package com.example.models.gameModels;
  */
 public enum TerrainType {
         Sea,Desert,Pasture,Forest,Mountains,Hills,Fields,GoldMine;
-        public ResourceCard.ResourceType giveResource(){
+        public StealableCard.Resource giveResource(){
                 switch (this){
                         case Mountains:
-                                return ResourceCard.ResourceType.Ore;
+                                return StealableCard.Resource.ORE;
                         case Forest:
-                                return ResourceCard.ResourceType.Wood;
+                                return StealableCard.Resource.WOOD;
                         case Pasture:
-                                return ResourceCard.ResourceType.Sheep;
+                                return StealableCard.Resource.SHEEP;
                         case Fields:
-                                return ResourceCard.ResourceType.Wheat;
+                                return StealableCard.Resource.WHEAT;
                         case Hills:
-                                return ResourceCard.ResourceType.Brick;
+                                return StealableCard.Resource.BRICK;
                 }
                 return null;
         }
 
-        public CommodityCard.CommodityType giveCommodity(){
+        public StealableCard.Commodity giveCommodity(){
                 switch(this){
                         case Mountains:
-                                return CommodityCard.CommodityType.Coin;
+                                return StealableCard.Commodity.COIN;
                         case Forest:
-                                return CommodityCard.CommodityType.Paper;
+                                return StealableCard.Commodity.PAPER;
                         case Pasture:
-                                return CommodityCard.CommodityType.Cloth;
+                                return StealableCard.Commodity.CLOTH;
                 }
                 return null;
         }

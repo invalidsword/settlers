@@ -14,10 +14,10 @@
 </head>
 
 <body data-spy="scroll" data-target=".navbar" data-offset="50">
+
 <script th:inline="javascript">
 
     /*<![CDATA[*/
-
 
     var myUsername = /*[[${username}]]*/ 'User Name';
     var startingPlayer = /*[[${startingPlayer}]]*/ 'Starting Player';
@@ -26,17 +26,15 @@
     var p1name = /*[[${player1}]]*/ 'p1 name';
     var p2name = /*[[${player2}]]*/ 'p2 name';
     var p3name = /*[[${player3}]]*/ 'p3 name';
-   // var p4name = /*[[${player4}]]*/ 'p4 name';
+    // var p4name = /*[[${player4}]]*/ 'p4 name';
 
     var p1color = /*[[${player1_c}]]*/ 'p1 color';
     var p2color = /*[[${player2_c}]]*/ 'p2 color';
     var p3color = /*[[${player3_c}]]*/ 'p3 color';
     //var p4name = /*[[${player4_c}]]*/ 'p4 color';
 
-
     /*]]>*/
 </script>
-
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -55,85 +53,141 @@
     </div>
 </nav>
 
-<div class="container-fluid bg-5" style="padding-top: 100px; padding-bottom: 0px;">
-    <!--PLAYER 2-->
-    <div class="dropdown col-sm-6">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-left: 1100px; width: 300px;">Player 2
-            <span class="caret"></span></button>
-    </div>
-
+<div class="container-fluid bg-5" style="padding-top: 7%; padding-bottom: 0%">
     <!--PLAYER 1-->
-    <div class="dropdown col-sm-6">
-        <button id="player1box"  class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" onclick="setAttributes()" style="width: 20%;">
-            <!--/*@thymesVar id="username" type=""*/-->
-            <span th:text="${username}"></span>
-            <span class="caret"></span></button>
-        <ul class="dropdown-menu" style="margin-left: 1.5%; margin-top: 8%; width: 41%;">
-
-            <button id="pRoad" onClick="placeRoad()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-            <button id="pShip" onClick="placeShip()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-            <button id="pSettlement" onClick="placeSettlement()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-            <button id="pCity" onClick="placeCity()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-
-            <!-- Trigger the Resource Cards modal with a button -->
-            <button id="resourceCard" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;" data-toggle="modal" data-target="#myModal2"></button>
-            <!-- Trigger the Commodity Cards modal with a button -->
-            <button id="commodityCard" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;" data-toggle="modal" data-target="#myModal3"></button>
-            <!-- Trigger the Knights modal with a button -->
-            <button id="totalKnight" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;" data-toggle="modal" data-target="#myModal4"></button>
-            <!-- Trigger the Maritime Trade modal with a button -->
-            <button id="maritimeTrade" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;" data-toggle="modal" data-target="#myModal6"></button>
-
-            <button id="road" onClick="buildRoad()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-            <button id="ship" onClick="buildShip()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-            <button id="settlement" onClick="buildSettlement()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-            <button id="city" onClick="buildCity()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-            <button id="wall" onClick="buildWall()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-            <button id="gold" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-            <button id="victoryPt" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 20px; width: 250px; height: 30px;"></button>
-        </ul>
+    <div class="col-sm-4 btn-group-vertical">
+        <button id="player1" class="btn turnWabble" type="button" style="z-index: 9; width: 20%;"><!--/*@thymesVar id="username" type=""*/-->
+        <span th:text="${username}"></span></button>
     </div>
 
-    <!--DICE-->
-    <img src="/images/preRed.png" id="die1" class="die1" style="margin-left: 555px; display: inline" width="100" height="100"/>
-    <img src="/images/preYellow.png" id="die2" class="die2" style=" display: inline" width="100" height="100"/>
-    <img src="/images/preWhite.png" id="eventDie" class="eventDie" style="display: inline" width="100" height="100"/>
-    <button class="btn-3d red" onclick="rollDice()" id="rolldice">Roll Dice</button>
-    <h2 id="status" style="margin-left: 640px;"></h2>
+    <div class="col-sm-4">
+        <!--DICE-->
+        <img src="/images/preRed.png" id="die1" class="die1" style="display: inline; width: 23%; height: 23%; margin-left: 15%"/>
+        <img src="/images/preYellow.png" id="die2" class="die2" style="display: inline; width: 23%; height: 23%"/>
+        <img src="/images/preWhite.png" id="eventDie" class="eventDie" style="display: inline; width: 23%; height: 23%"/>
+        <button class="btn-3d red" onclick="rollDice()" id="rolldice">Roll Dice</button>
+        <h2 id="status" style="margin-left: 640px;"></h2>
+    </div>
 
-    <!--No resources message
-    <div class="alert alert-warning alert-dismissable" id="noResources" style="width: 330px; margin-left: 550px;">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-        <strong>You do not have enough resources.</strong>
-    </div>-->
-
-    <div>
-        <h2 id="currPlayer" style="margin-left: 640px;"></h2>
-        <svg id="svgcanvas" width="1200" height="700"></svg>
-
-
+    <!--PLAYER 2-->
+    <div class="col-sm-4">
+        <button id="player2" class="btn turnWabble" type="button" style="z-index: 9; width: 20%; margin-left: 10%;"></button>
     </div>
 </div>
 
-<div class="container-fluid bg-5" style="height: 1000px;">
-    <!--PLAYER 3-->
-    <div class="dropdown col-sm-4" style="bottom: 10px;">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-left:5px; width: 300px;">Player 3
-            <span class="caret"></span></button>
+<div class="container-fluid bg-5" style="padding-top: 0px;">
+    <!--PLAYER options-->
+    <div class="col-sm-2 btn-group-vertical">
+        <!--Placement Options-->
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Placement Options</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                        <input type="radio" name="optradio" id="bRoad" onclick="buyRoad()">Buy Road</input>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                        <input type="radio" name="optradio" id="bSettlement" onclick="buySettlement()">Buy Settlement</input>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                        <input type="radio" name="optradio" id="uCity" onclick="upgradeCity()">Upgrade to City</input>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                        <input type="radio" name="optradio" id="mShip" onclick="moveShip()">Move Ship</input>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                        <input type="radio" name="optradio" id="aKnight" onclick="activateKnight()">Activate Knight</input>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                        <input type="radio" name="optradio" id="bKnight" onclick="buyKnight()">Buy Knight (basic)</input>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                        <input type="radio" name="optradio" id="uKnightStrong" onclick="updateStrong()">Upgrade Knight (strong)</input>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                        <input type="radio" name="optradio" id="uKnightMighty" onclick="updateMighty()">Upgrade Knight (mighty)</input>
+                    </label>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h3>Clickable Counter</h3>
+        <!-- Trigger the Resource Cards modal with a button -->
+        <button id="resourceCard" type="button" class="btn btn-primary" style="margin-left: 1.6%; font-size: 100%; width: 100%; height: 100%;" data-toggle="modal" data-target="#myModal2"></button>
+        <!-- Trigger the Commodity Cards modal with a button -->
+        <button id="commodityCard" type="button" class="btn btn-primary" style="margin-left: 1.6%; font-size: 100%; width: 100%; height: 100%;" data-toggle="modal" data-target="#myModal3"></button>
+        <!-- Trigger the Knights modal with a button -->
+        <button id="totalKnight" type="button" class="btn btn-primary" style="margin-left: 1.6%; font-size: 100%; width: 100%; height: 100%;" data-toggle="modal" data-target="#myModal4"></button>
+        <!-- Trigger the Maritime Trade modal with a button -->
+        <button id="maritimeTrade" onclick="setPreResult()" type="button" class="btn btn-primary" style="margin-left: 1.6%; font-size: 100%; width: 100%; height: 100%;" data-toggle="modal" data-target="#myModal6"></button>
+
+        <h3>Counter</h3>
+        <h4 id="road"></h4>
+        <h4 id="ship"></h4>
+        <h4 id="settlement"></h4>
+        <h4 id="city"></h4>
+        <h4 id="wall"></h4>
+        <h4 id="gold"></h4>
+        <h4 id="victoryPt"></h4>
     </div>
 
-    <!--PLAYER 4-->
-    <div class="dropdown col-sm-4" style="left: 320px; bottom: 10px;">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-left: 800px; width: 300px;">Player 4
-            <span class="caret"></span></button>
+    <div class="col-sm-10">
+        <!--No resources message-->
+        <div id="noResource">No resource you poor sorry ass woeeee</div>
+        <svg id="svgcanvas" width="100%" height="700"></svg>
+    </div>
+</div>
+
+<div class="container-fluid bg-5" style="z-index: 10;">
+    <!--PLAYER 3-->
+    <div class="col-sm-4">
+        <button id="player3" class="btn turnWabble" type="button" style="z-index: 9; bottom: 1%; width: 20%;"></button>
     </div>
 
     <!--End Turn Button-->
-    <div><button type="button" onclick="endTurn()" class="hvr-pulse-grow col-sm-4" id="endTurn" style="bottom: 10px; padding: 0px; left: 320px; margin-left: 160px;">End Turn</button></div>
+    <div class="col-sm-4">
+        <button type="button" onclick="endTurn()" class="btn hvr-pulse-grow" id="endTurn" style="bottom: 1%; width: 35%; height: 7%; left: 32%;">End Turn</button>
+    </div>
 
-
+    <!--PLAYER 4-->
+    <div class="col-sm-4">
+        <button id="player4" class="btn btn-primary turnWabble" type="button" style="z-index: 9; bottom: 1%; margin-left: 10%; width: 20%;"></button>
+    </div>
 </div>
-
 
 <!-- MODALS -->
 <!-- Modal for Quit Game -->
@@ -149,7 +203,7 @@
                 <p>Would you like to quit this game?</p>
             </div>
             <div class="modal-footer">
-                <a href="http://localhost:8080/lobby" class="btn btn-primary">Quit</a>
+                <a href="http://localhost:8080/gameroom" class="btn btn-primary">Quit</a>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
         </div>
@@ -259,9 +313,10 @@
                 <button id="tradeOre" onclick="giveOre()" type="button" class="btn btn-primary" style="padding: 0px; font-size: 20px; margin-left: 15px; width: 80px; height: 40px;"></button>
                 <button id="tradeSheep" onclick="giveSheep()" type="button" class="btn btn-primary" style="padding: 0px; font-size: 20px; margin-left: 20px; width: 80px; height: 40px;"></button>
                 <button id="tradeWheat" onclick="giveWheat()" type="button" class="btn btn-primary" style="padding: 0px; font-size: 20px; margin-left: 15px; width: 80px; height: 40px;"></button>
+                <h2 id="tResult" style="margin-left: 35%;"></h2>
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-primary">Trade</a>
+                <a href="#" class="btn btn-primary" onClick="trade()">Trade</a>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
         </div>
@@ -269,7 +324,14 @@
 </div>
 
 <script th:src="@{/js/gamelogic.js}"></script>
-
+<!-- Creates a popup that asks user if he wishes to leave page.-->
+<script language="JavaScript" type="text/javascript">
+    //<![CDATA[
+    window.onbeforeunload = function(){
+        return 'Are you sure you want to leave?';
+    };
+    //]]>
+</script>
 
 </body>
 </html>
