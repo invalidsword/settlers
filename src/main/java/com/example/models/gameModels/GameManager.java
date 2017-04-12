@@ -620,6 +620,37 @@ public class GameManager {
         nextPlayer();
     }
 
+    public void calculateRouteLength(Player pPlayer){
+        List<Edge> occupiedEdges = new ArrayList<>();
+        for (Edge edge : aGame.getBoard().getEdges().values()){
+            if (edge.getTransport() != null && edge.getTransport().getOwner() == pPlayer){
+                occupiedEdges.add(edge);
+            }
+        }
+        int length = occupiedEdges.size() + 1;
+        pPlayer.setaRouteLength(length);
+    }
+
+    public void longestRouteOwner(){
+        int max = 0;
+        for (Player playerpass1 : aGame.getPlayers()){
+            if (playerpass1.getaRouteLength() > max){
+                max = playerpass1.getaRouteLength();
+                playerpass1.setaLongestTradeRoute(true);
+            }
+        }
+        for (Player playerpass2 :  aGame.getPlayers()){
+            if (playerpass2.getaRouteLength() < max){
+                playerpass2.setaLongestTradeRoute(false);
+            }
+        }
+        for (Player playerpass3 : aGame.getPlayers()){
+            if (playerpass3.isaLongestTradeRoute()){
+                playerpass3.setaVPs(playerpass3.getaVPs() + 2);
+            }
+        }
+    }
+
     private void nextPlayer(){
         aGame.updateTurn();
     }

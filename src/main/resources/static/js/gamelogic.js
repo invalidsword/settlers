@@ -469,6 +469,51 @@ function connect() {
 
         });
 
+        stompClient.subscribe('/topic/victorypoints', function(vPiece){
+            vPiece = JSON.parse((vPiece.body));
+
+            var p1points = vPiece.p1points;
+            var p2points = vPiece.p2points;
+            var p3points = vPiece.p3points;
+
+            document.getElementById('P1Vp').innerHTML = p1points;
+            document.getElementById('P2Vp').innerHTML = p2points;
+            document.getElementById('P3Vp').innerHTML = p3points;
+
+            document.getElementById('P1').innerHTML = p1name;
+            document.getElementById('P2').innerHTML = p2name;
+            document.getElementById('P3').innerHTML = p3name;
+
+            var p1PTS = 10*p1points;
+            var p2PTS = 10*p2points;
+            var p3PTS = 10*p3points;
+
+            document.getElementById('P1Vp').style.width = p1PTS+"%";
+            document.getElementById('P2Vp').style.width = p2PTS+"%";
+            document.getElementById('P3Vp').style.width = p3PTS+"%";
+
+            if(p1points >= 3){
+                if(p2points>p3points)
+                    openNav(p1name,p2name,p3name);
+                else
+                    openNav(p1name,p3name,p2name);
+            }
+            else if(p2points >= 10)
+            {
+                if(p1points>p3points)
+                    openNav(p2name,p1name,p3name);
+                else
+                    openNav(p2name,p3name,p1name);
+            }
+            else if(p3points >= 10)
+            {
+                if(p1points>p2points)
+                    openNav(p3name,p1name,p2name);
+                else
+                    openNav(p3name,p2name,p1name);
+            }
+        });
+
         stompClient.subscribe('/topic/knight', function(piece){
             piece = JSON.parse((piece.body));
 
@@ -489,8 +534,8 @@ function connect() {
             var toColor = piece.color;
             var valid = piece.isValid;
             if(valid) {
-                var str = d3.select("k"+myId).attr("strength");
-                drawKnight(myId,toColor,str++);
+                var str = d3.select("k"+myId).attr("strength")+1;
+                drawKnight(myId,toColor,str);
                 getResources();
             }
 
@@ -623,6 +668,25 @@ function SendMaritime(get,give) {
     stompClient.send("/app/maritimetrade",{},JSON.stringify({"aRequested":get, "aOffered":give, "isValid":false}))
 }
 
+// Win and Lose game
+function openNav(fst,snd,thd) {
+
+    if(myUsername == fst)
+        document.getElementById("mySidenav").style.width = "100%";
+    else
+    {
+        document.getElementById("mySidenav").style.width = "100%";
+        document.getElementById("mySidenav").innerHTML = "You lost!";
+    }
+
+        document.getElementById("fst").innerHTML = fst;
+        document.getElementById("snd").innerHTML = snd;
+        document.getElementById("thd").innerHTML = thd;
+
+}
+
+
+
 //Roll Dice
 function rollDice() {
     var status = document.getElementById("status");
@@ -649,6 +713,13 @@ function endTurn() {
     disableMyButtons();
 
 }
+
+function setVP() {
+
+    stompClient.send("/app/showvictorypoints",{}, {});
+
+}
+
 
 //Radio click on/off
 

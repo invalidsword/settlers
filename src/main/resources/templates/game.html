@@ -38,6 +38,15 @@
     /*]]>*/
 </script>
 
+<!-- Win or Lose game -->
+<div id="mySidenav" class="sidenav" style="z-index:11">
+    <a href="#" id="result" style="font-size:100px">You won!</a>
+    <a href="#" class="radio w3-text-red" id="fst">1) </a>
+    <a href="#" class="radio w3-text-yellow" id="snd">2) </a>
+    <a href="#" class="radio w3-text-green" id="thd">3) </a>
+</div>
+
+
 <!-- Sidebar1 -->
 <div class="w3-sidebar w3-bar-block w3-black w3-animate-left" style="display:none; z-index:10" id="mySidebar1">
     <table class="table table-condensed">
@@ -200,6 +209,30 @@
             <button class="w3-button" onclick="w3_open3()">&#9776; Trades</button>
             <button class="w3-button" onclick="w3_open4()">&#9776; Inventory</button>
             <button class="w3-button" onclick="w3_open5()">&#9776; Save or Quit Game</button>
+            <button type="button" class="btn btn-info" data-toggle="collapse" onclick = "setVP()" data-target="#demo">Victory Points</button>
+            <div id="demo" class="collapse">
+                <h4 id="P1"></h4>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" id="P1Vp" role="progressbar"
+                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">
+                        4
+                    </div>
+                </div>
+                <h4 id="P2"></h4>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" id="P2Vp" role="progressbar"
+                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:80%">
+                        8
+                    </div>
+                </div>
+                <h4 id="P3"></h4>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" id="P3Vp" role="progressbar"
+                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:10%">
+                        1
+                    </div>
+                </div>
+            </div>
             <!--No resources message-->
             <div id="noResource">No resource you poor sorry ass woeeee</div>
         </div>

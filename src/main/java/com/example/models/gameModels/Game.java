@@ -161,4 +161,8 @@ public class Game {
     }
 
     public long getId(){return gameid;}
+
+    public int getaVPsToWin() {
+        return aVPsToWin;
+    }
 }

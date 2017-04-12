@@ -345,6 +345,28 @@ public class GameController {
     }
 /* Robber */
 
+    @MessageMapping("/showvictorypoints")
+    @SendTo("/topic/victorypoints")
+    public ViewVictoryPoints showVictoryPoints(){
+        System.out.println("getVps");
+        ViewVictoryPoints pNew = new ViewVictoryPoints();
+        for (Player player : aGame.getPlayers()){
+            if (player.getaIndex()==0) {
+                System.out.println("P1 "+player.getaVPs());
+
+                pNew.setP1points(player.getaVPs());
+            } else if  (player.getaIndex()==0) {
+                System.out.println("P1 "+player.getaVPs());
+
+                pNew.setP2points(player.getaVPs());
+            } else {
+                System.out.println("P1 "+player.getaVPs());
+                pNew.setP3points(player.getaVPs());
+            }
+        }
+        pNew.setPointsToWin(aGame.getaVPsToWin());
+        return pNew;
+    }
 
     @MessageMapping("/placerobber")
     @SendTo("/topic/placerobber")
