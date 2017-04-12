@@ -1,15 +1,40 @@
 package com.example.models.gameModels;
 
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
 import java.util.Map;
 
 /**
  * Created by G on 17/02/27.
  */
+@Entity
 public class Edge extends Geometry{
 
+    public Edge(){}
+
+    public boolean isOccupied() {
+        return isOccupied;
+    }
+
+    public void setOccupied(boolean occupied) {
+        isOccupied = occupied;
+    }
+
+    public OwnedTransport getaTransport() {
+        return aTransport;
+    }
+
+    public void setaTransport(OwnedTransport aTransport) {
+        this.aTransport = aTransport;
+    }
+
     private boolean isOccupied;
-    private EdgeUnit aOccupant;
+
+    @OneToOne(cascade= CascadeType.ALL, fetch = FetchType.LAZY)
+    private OwnedTransport aTransport;
 
     public Edge(String pId)
     {
@@ -22,20 +47,22 @@ public class Edge extends Geometry{
        return isOccupied;
     }
 
-    public EdgeUnit getOccupant(){
-        return aOccupant;
+    public void setOccupancyFlag(boolean p){isOccupied = p;}
+
+    public OwnedTransport getTransport(){
+        return aTransport;
     }
 
-    public void setOccupant(EdgeUnit pOccupant)
+    public void setTransport(OwnedTransport pTransport)
     {
-        aOccupant = pOccupant;
+        aTransport = pTransport;
         isOccupied = true;
     }
 
-    public EdgeUnit removeOccupant()
+    public OwnedTransport removeTransport()
     {
-        EdgeUnit tempUnit = aOccupant;
-        aOccupant = null;
+        OwnedTransport tempUnit = aTransport;
+        aTransport = null;
         isOccupied = false;
         return tempUnit;
     }
@@ -49,7 +76,6 @@ public class Edge extends Geometry{
         final int y = getY();
         final int ym = y-1;
         final int yp = y+1;
-
         String id1;
         String id2;
         String id3;
@@ -80,22 +106,22 @@ public class Edge extends Geometry{
                 id4 = "blah";
                 //will return null
         }
-          //  System.out.println("THIS: "+getId());
+          //  //System.out.println("THIS: "+getId());
 
         if(pEdges.get(id1)!=null) {
-       //     System.out.println(id1);
+            //System.out.println(id1);
             EdgeNeighbours.add(pEdges.get(id1));
         }
         if(pEdges.get(id2)!=null){
-       //     System.out.println(id2);
+            //System.out.println(id2);
             EdgeNeighbours.add(pEdges.get(id2));
         }
         if(pEdges.get(id3)!=null) {
-       //     System.out.println(id3);
+            //System.out.println(id3);
             EdgeNeighbours.add(pEdges.get(id3));
         }
         if(pEdges.get(id4)!=null) {
-      //      System.out.println(id4);
+            //System.out.println(id4);
             EdgeNeighbours.add(pEdges.get(id4));
         }
 
@@ -158,8 +184,30 @@ public class Edge extends Geometry{
             IntersectionNeighbours.add(pIntersections.get(id1));
         if(pIntersections.get(id2)!=null)
             IntersectionNeighbours.add(pIntersections.get(id2));
+    }
 
+    @Override
+    public String toString() {
+        return "Edge{" +
+                "isOccupied=" + isOccupied +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Edge)) return false;
+        if (!super.equals(o)) return false;
 
+        Edge edge = (Edge) o;
+
+        if (isOccupied != edge.isOccupied) return false;
+        return aTransport != null ? aTransport.equals(edge.aTransport) : edge.aTransport == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = aId.hashCode();
+        return result;
     }
 }

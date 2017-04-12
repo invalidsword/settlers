@@ -40,7 +40,7 @@
                         <div class="panel-body text-center" style="height: 500px;">
                             <h1>Player List</h1>
                             <div class="scroll">
-                                
+
                                 <!--/*@thymesVar id="playerList" type="com.example.controllers.network.GameRoomController.playerList"*/-->
                                 <tr th:each="p : ${playerList}">
                                     <button type="button" class="player-btn" th:text="${p}"></button>
@@ -48,24 +48,29 @@
                                 <form id="playerlist">
 
                                 </form>
+
                             </div>
                         </div>
                     </div>
                     <div class="player-box col-sm-8" style="padding: 0px; margin: 0px;">
                         <div class="panel-body text-center" style="height: 500px;">
                             <h1>Gameroom name</h1>
-                            <a id="gameroom" th:href="@{/game}">Join Game!</a>
-                            <table class="table table-striped">
-                                <tbody id="connections">
-                                </tbody>
-                            </table>
+                            <div class="scroll">
+                                <!--/*@thymesVar id="savedGameNames" type="com.example.controllers.network.GameRoomController.savedGameNames"*/-->
+                                <tr th:each="s : ${savedGameNames}">
+                                    <button type="button" th:onclick="'returnGameSelection(\'' + ${s} + '\');'" class="player-btn"  th:text="${s}"></button>
+                                </tr>
+                            </div>
+
+
+                            <!--<a id="gameroom" th:href="@{/game}">Join Game!</a>-->
                         </div>
                     </div>
 
                 </div>
             </div>
 
-           <!-- <button id="connect" type="button" class="btn btn-primary" style="margin-top: 20px; font-size: 30px;">Ready</button>-->
+            <!-- <button id="connect" type="button" class="btn btn-primary" style="margin-top: 20px; font-size: 30px;">Ready</button>-->
             <button id="joingame" type="button" class="btn btn-primary" style="margin-top: 20px; font-size: 30px;">Join</button>
 
 
@@ -102,6 +107,33 @@
 </footer>
 
 <script th:src="@{/js/gameConnect.js}"></script>
+<script>
+
+    function returnGameSelection(butter)
+    {
+        console.log(butter);
+        $.ajax({
+            url: '/loadgame',
+            headers: {
+                //'Accept': 'application/json',
+                'Content-Type':'application/json'
+            },
+            method: 'POST',
+            dataType: 'text',
+            data: butter,
+            success: function(){
+                alert('success');
+            },
+            error: function(){
+                alert('failure');
+            }
+        });
+
+    }
+
+
+
+</script>
 
 </body>
 </html>
