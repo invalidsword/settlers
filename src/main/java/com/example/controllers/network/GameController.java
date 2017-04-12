@@ -5,6 +5,7 @@ import com.example.viewobjects.*;
 import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -13,10 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
 @Controller
 public class GameController {
+
+    @Autowired
+    private GameManager gameManager;
 
     private static ArrayList<String> currPlayerList = new ArrayList<String>(); // Get a list of players too?
     private static Game aGame;
@@ -24,41 +30,10 @@ public class GameController {
 
     private static int placeSettlementAndRoadCounter = 0;
     private static int placeCityAndRoadCounter = 0;
-
-    private static int currPlayerTurn = 0;
     private static int currNumPlayers;
-
-    private static final String player1color = "red";
-    private static final String player2color = "yellow";
-    private static final String player3color = "green";
-    private static final String player4color = "blue";
-
+    private static int currPlayerTurn = 0;
     private static final PlayerAndPhase pap = new PlayerAndPhase();
-
     private static int turnCounter = 0;
-
-    public static ArrayList<Player> createPlayers(ArrayList<String> currPlayerList){
-        ArrayList<Player> aPlayers = new ArrayList<Player>();
-        for (int i = 0; i < currPlayerList.size(); i++){
-            if(i == 0) {
-                Player player1 = new Player(currPlayerList.get(i), player1color);
-                aPlayers.add(player1);
-            }
-            else if (i == 1) {
-                Player player2 = new Player(currPlayerList.get(i), player2color);
-                aPlayers.add(player2);
-            }
-            else if (i == 2) {
-                Player player3 = new Player(currPlayerList.get(i), player3color);
-                aPlayers.add(player3);
-            }
-            else if (i == 3) {
-                Player player4 = new Player(currPlayerList.get(i), player4color);
-                aPlayers.add(player4);
-            }
-        }
-        return aPlayers;
-    }
 
     public static void setCurrPlayerList(ArrayList<String> pList){
         for (String s : pList){
@@ -70,19 +45,6 @@ public class GameController {
         pap.setSetup2(false);
     }
 
-    public static void createGame(){/*
-        List<String> myColors = new ArrayList<String>();
-        myColors.add(0,player1color);
-        myColors.add(1,player2color);
-        myColors.add(2,player3color);
-        myColors.add(3,player3color);
-        aGame = new Game(10,createPlayers(currPlayerList),myColors);
-        System.out.println(aGame.getPlayers().size());
-        aGame.setPlayerProperties(aGame.getPlayers());*/
-    }
-
-
-
     @RequestMapping(value="/game", method= RequestMethod.GET)
     public String game(ModelMap model, Principal caller) {
 
@@ -91,228 +53,405 @@ public class GameController {
         model.addAttribute("startingPlayer",currPlayerList.get(0));
 
         for(int i = 0 ; i < currPlayerList.size(); i++){
-
             if (currPlayerList.get(i).matches(name)){
-                String color = "";
-
-                if (i == 0){
-                    color = player1color;
-                }else if(i == 1){
-                    color = player2color;
-                }else if(i == 2){
-                    color = player3color;
-                }else if( i== 3){
-                    color = player4color;
-                }
+                String color = gameManager.getGame().getPlayers().get(i).getaColor();
                 model.addAttribute("myColor", color);
             }
-
         }
 
-        model.addAttribute("player1",currPlayerList.get(0));
-        model.addAttribute("player2",currPlayerList.get(1));
-        model.addAttribute("player3",currPlayerList.get(2));
-        //model.addAttribute("player4",currPlayerList.get(3));
+        for(int i = 0 ; i < currPlayerList.size(); i++){
+            model.addAttribute("player"+(i+1),currPlayerList.get(i));
+        }
 
-        model.addAttribute("player1_c", player1color);
-        model.addAttribute("player2_c", player2color);
-        model.addAttribute("player3_c", player3color);
-       // model.addAttribute("player4_c", player4color);
+        for(int i = 0 ; i < currPlayerList.size(); i++){
+            model.addAttribute("player"+(i+1)+"_c", gameManager.getGame().getPlayers().get(i).getaColor());
+        }
+        aGame = gameManager.getGame();
 
         return "game";
     }
 
 
-
     @MessageMapping("/placesettlement")
     @SendTo("/topic/settlement")
     public ViewPiece placeSettlement(ViewPiece pNew, Principal caller){
-        /*
-        Player callingPlayer = new Player(null, null);
-        for (Player player : aGame.getPlayers()){
-            if (player.getUsername() == caller.getName()){
-                callingPlayer = player;
-                break;
-            }
+        Player checkee = gameManager.getPlayerFromString(caller.getName());
+        Intersection checker = gameManager.getGame().getBoard().getIntersections().get(pNew.getId());
+        System.out.println("Can buy: "+gameManager.checkBuySettlement(checkee));
+        System.out.println("Can place: "+gameManager.checkSettlementPlaceEligibility(checker,pNew.getColor()));
+        boolean isValid = gameManager.checkBuySettlement(checkee) && gameManager.checkSettlementPlaceEligibility(checker,pNew.getColor());
+        if(isValid)
+        {
+            gameManager.paySettlement(checkee);
+            gameManager.placeSettlement(checkee, checker);
         }
-        aGame.placeSettlement(callingPlayer, aGame.getIntersections().get(pNew.getId()));*/
+        pNew.setIsValid(isValid);
         return pNew;
     }
+
+
 
     @MessageMapping("/placecity")
     @SendTo("/topic/city")
     public ViewPiece placeCity(ViewPiece pNew, Principal caller){
-        /*
-        Player callingPlayer = new Player(null, null);
-        for (Player player : aGame.getPlayers()){
-            if (player.getUsername() == caller.getName()){
-                callingPlayer = player;
-                break;
-            }
+        Player checkee = gameManager.getPlayerFromString(caller.getName());
+        Intersection checker = gameManager.getGame().getBoard().getIntersections().get(pNew.getId());
+        boolean isValid = gameManager.checkBuyCity(checkee) && gameManager.checkCityPlaceEligibility(checker,pNew.getColor());
+        if(isValid)
+        {
+            gameManager.payCity(checkee);
+            gameManager.placeCity(checkee, checker);
         }
-        aGame.placeCity(callingPlayer, aGame.getIntersections().get(pNew.getId()));*/
+        pNew.setIsValid(isValid);
         return pNew;
     }
 
     @MessageMapping("/placeroad")
     @SendTo("/topic/road")
     public ViewPiece placeRoad(ViewPiece pNew, Principal caller){
-        /*
-        Player callingPlayer = new Player(null, null);
-        for (Player player : aGame.getPlayers()){
-            if (player.getUsername() == caller.getName()){
-                callingPlayer = player;
-                break;
-            }
+        System.out.println("    Buying road");
+        Player checkee = gameManager.getPlayerFromString(caller.getName());
+        Edge checker = gameManager.getGame().getBoard().getEdges().get(pNew.getId());
+        System.out.println("Can buy: "+gameManager.checkBuyRoad(checkee));
+        System.out.println("Can place: "+gameManager.checkRoadEligibility(checker,pNew.getColor()));
+        boolean isValid = gameManager.checkBuyRoad(checkee) && gameManager.checkRoadEligibility(checker,pNew.getColor());
+        if(isValid)
+        {
+            gameManager.payRoad(checkee);
+            gameManager.placeRoad(checkee, checker);
         }
-        aGame.placeRoad(callingPlayer, aGame.getEdges().get(pNew.getId()));*/
+        pNew.setIsValid(isValid);
         return pNew;
     }
+
+    @MessageMapping("/placeship")
+    @SendTo("/topic/ship")
+    public ViewPiece placeShip(ViewPiece pNew, Principal caller){
+        Player checkee = gameManager.getPlayerFromString(caller.getName());
+        Edge checker = gameManager.getGame().getBoard().getEdges().get(pNew.getId());
+        boolean isValid = gameManager.checkBuyShip(checkee) && gameManager.checkShipEligibility(checker,pNew.getColor());
+        if(isValid)
+        {
+            gameManager.payShip(checkee);
+            gameManager.placeShip(checkee, checker);
+        }
+        pNew.setIsValid(isValid);
+        return pNew;
+    }
+
+    @MessageMapping("/placeknight")
+    @SendTo("/topic/knight")
+    public ViewPiece placeKnight(ViewPiece pNew, Principal caller){
+        System.out.println(" Place Knight");
+        Player checkee = gameManager.getPlayerFromString(caller.getName());
+        Intersection checker = gameManager.getGame().getBoard().getIntersections().get(pNew.getId());
+        System.out.println("Buy knight : "+gameManager.checkBuyKnight(checkee));
+        System.out.println("Place knight : "+gameManager.checkKnightPlaceEligibility(checker, pNew.getColor()));
+
+        boolean isValid = gameManager.checkBuyKnight(checkee) && gameManager.checkKnightPlaceEligibility(checker, pNew.getColor());
+        if (isValid){
+            gameManager.payKnight(checkee);
+            gameManager.placeKnight(checkee, checker);
+        }
+        pNew.setIsValid(isValid);
+        return pNew;
+    }
+
+    @MessageMapping("/upgradeknight")
+    @SendTo("/topic/upgradeknight")
+    public ViewPiece upgradeKnight(ViewPiece pNew, Principal caller){
+        Player checkee = gameManager.getPlayerFromString(caller.getName());
+        Intersection checker = gameManager.getGame().getBoard().getIntersections().get(pNew.getId());
+        System.out.println("Buy knight : "+gameManager.checkBuyKnight(checkee));
+        System.out.println("Place knight : "+gameManager.checkUpgradeKnightEligibility(checker, pNew.getColor()));
+        boolean isValid = gameManager.checkBuyKnight(checkee) && gameManager.checkUpgradeKnightEligibility(checker, pNew.getColor());
+        if (isValid){
+            gameManager.payKnight(checkee);
+            gameManager.upgradeKnight(checkee, checker);
+        }
+        pNew.setIsValid(isValid);
+        return pNew;
+    }
+
+    @MessageMapping("/activateknight")
+    @SendTo("/topic/activateknight")
+    public ViewPiece activateKnight(ViewPiece pNew, Principal caller){
+        System.out.println("activate knight");
+        Player checkee = gameManager.getPlayerFromString(caller.getName());
+        Intersection checker = gameManager.getGame().getBoard().getIntersections().get(pNew.getId());
+        boolean isValid = gameManager.checkActivateEligibility(checker, pNew.getColor()) && gameManager.checkBuyActivation(checkee);
+        System.out.println("Activate Pay : "+ gameManager.checkBuyActivation(checkee));
+        System.out.println("Activate Eligible : "+ gameManager.checkActivateEligibility(checker, pNew.getColor()));
+        if (isValid){
+            gameManager.payActivation(checkee);
+            gameManager.activateKnight(checker);
+        }
+        pNew.setIsValid(isValid);
+        return pNew;
+    }
+
+    // SETUP IS FIRST 2 TURNS
 
     @MessageMapping("/setupsettlement")
     @SendTo("/topic/settlement")
     public ViewPiece setupSettlement(ViewPiece pNew, Principal caller){
-        /*
-        Player callingPlayer = new Player(null, null);
-        for (Player player : aGame.getPlayers()){
-            if (player.getUsername() == caller.getName()){
-                callingPlayer = player;
-                break;
-            }
+        System.out.println("Check settlement");
+        Player checkee = gameManager.getPlayerFromString(caller.getName());
+        Intersection checker = gameManager.getGame().getBoard().getIntersections().get(pNew.getId());
+        boolean isValid = gameManager.checkIntersectionSetupEligibility(checker);
+        if(isValid) {
+            gameManager.placeSettlement(checkee, checker);
         }
-        aGame.setupSettlement(callingPlayer, aGame.getIntersections().get(pNew.getId()));*/
+        pNew.setIsValid(isValid);
         return pNew;
     }
 
     @MessageMapping("/setupcity")
     @SendTo("/topic/city")
     public ViewPiece setupCity(ViewPiece pNew, Principal caller){
-        /*
-        Player callingPlayer = new Player(null, null);
-        for (Player player : aGame.getPlayers()){
-            if (player.getUsername() == caller.getName()){
-                callingPlayer = player;
-                break;
-            }
+        System.out.println("Check city");
+        Player checkee = gameManager.getPlayerFromString(caller.getName());
+        Intersection checker = gameManager.getGame().getBoard().getIntersections().get(pNew.getId());
+        boolean isValid = gameManager.checkIntersectionSetupEligibility(checker);
+        if(isValid) {
+            gameManager.placeCity(checkee, checker);
         }
-        aGame.setupCity(callingPlayer, aGame.getIntersections().get(pNew.getId()));*/
+        pNew.setIsValid(isValid);
         return pNew;
     }
 
     @MessageMapping("/setuproad")
     @SendTo("/topic/road")
-    public ViewPiece setupRoad(ViewPiece pNew, Principal caller){
-        /*
-        Player callingPlayer = new Player(null, null);
-        for (Player player : aGame.getPlayers()){
-            if (player.getUsername() == caller.getName()){
-                callingPlayer = player;
-                break;
+    public ViewPiece setupRoad(ViewPiece pNew, Principal caller) {
+        //System.out.println("----  "+pNew.getId());
+        Player checkee = gameManager.getPlayerFromString(caller.getName());
+        Edge checker = gameManager.getGame().getBoard().getEdges().get(pNew.getId());
+        boolean isValid = gameManager.checkRoadEligibility(checker, pNew.getColor());
+        if (checkee.getaBuildings().get(Unit.Building.CITY) == 3){
+            boolean isCity = false;
+            for (Intersection neighbour : checker.getIntersectionNeighbours()){
+                if (neighbour.getBuilding()!= null && neighbour.getBuilding().isCity()){
+                    isCity = true;
+                    break;
+                }
             }
+            isValid = isValid && isCity;
         }
-        aGame.setupRoad(callingPlayer, aGame.getEdges().get(pNew.getId()));
-        */
+        if (isValid){
+            //System.out.println("VALID");
+            gameManager.placeRoad(checkee, checker);
+        }
+        //System.out.println("5");
+        pNew.setIsValid(isValid);
+        //System.out.println("returning");
         return pNew;
     }
 
-    @SendTo("/topic/playerIncrement")
-    public PlayerIncrement setupPayout(){
-
-        PlayerIncrement increment = new PlayerIncrement();
-       // aGame.setupPayout();
-        setPlayerIncrement(increment);
-        return increment;
+    @MessageMapping("/setupDone")
+    @SendTo("/topic/setupDone")
+    public boolean setupPayout(){
+        gameManager.setupPayout();
+        return true;
     }
 
     @MessageMapping("/rolldice")
     @SendTo("/topic/dice")
     public DiceRoll showDice(DiceRoll pDice){
-        /*aGame.rollDice(pDice.getYellow(), pDice.getRed(), pDice.getEvent());*/
-        /*diceRollPayout();*/
+        gameManager.rollDice(pDice.getYellow(), pDice.getRed(), pDice.getEvent());
         return pDice;
     }
 
+    @MessageMapping("/getResources")
     @SendTo("/topic/playerIncrement")
-    private PlayerIncrement diceRollPayout(){
-
+    public PlayerIncrement showPlayerIncrement(){
         PlayerIncrement increment = new PlayerIncrement();
-        //setPlayerIncrement(increment);
+        setPlayerIncrement(increment);
         return increment;
     }
 
     private void setPlayerIncrement(PlayerIncrement pIncrement){
-        /*
         for (String pUsername : currPlayerList){
-            for (Player player : aGame.getPlayers()) {
-                if (pUsername.equals(player.getUsername())) {
-                    int index = currPlayerList.indexOf(player.getUsername());
-                    switch (index) {
-                        case 1:
-                            pIncrement.setp1(
-                                    player.getGold(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Ore).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Brick).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Wood).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Sheep).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Coin).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Cloth).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Paper).size());
-                        case 2:
-                            pIncrement.setp2(
-                                    player.getGold(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Ore).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Brick).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Wood).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Sheep).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Coin).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Cloth).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Paper).size());
-                        case 3:
-                            pIncrement.setp3(
-                                    player.getGold(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Ore).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Brick).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Wood).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Sheep).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Coin).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Cloth).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Paper).size());
-                        case 4:
-                            pIncrement.setp4(
-                                    player.getGold(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Ore).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Brick).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Wood).size(),
-                                    player.getResourceCards().get(ResourceCard.ResourceType.Sheep).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Coin).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Cloth).size(),
-                                    player.getCommodityCards().get(CommodityCard.CommodityType.Paper).size());
-                    }
+            Player player = gameManager.getPlayerFromString(pUsername);
+            int index = currPlayerList.indexOf(player.getaUsername());
+            switch (index) {
+                case 0:
+                    pIncrement.setp1(
+                            player.getaGold(),
+                            player.getaResourceCards().get(StealableCard.Resource.ORE),
+                            player.getaResourceCards().get(StealableCard.Resource.BRICK),
+                            player.getaResourceCards().get(StealableCard.Resource.WOOD),
+                            player.getaResourceCards().get(StealableCard.Resource.SHEEP),
+                            player.getaResourceCards().get(StealableCard.Resource.WHEAT),
+                            player.getaCommodityCards().get(StealableCard.Commodity.COIN),
+                            player.getaCommodityCards().get(StealableCard.Commodity.CLOTH),
+                            player.getaCommodityCards().get(StealableCard.Commodity.PAPER));
+                    continue;
+                case 1:
+                    pIncrement.setp2(
+                            player.getaGold(),
+                            player.getaResourceCards().get(StealableCard.Resource.ORE),
+                            player.getaResourceCards().get(StealableCard.Resource.BRICK),
+                            player.getaResourceCards().get(StealableCard.Resource.WOOD),
+                            player.getaResourceCards().get(StealableCard.Resource.SHEEP),
+                            player.getaResourceCards().get(StealableCard.Resource.WHEAT),
+                            player.getaCommodityCards().get(StealableCard.Commodity.COIN),
+                            player.getaCommodityCards().get(StealableCard.Commodity.CLOTH),
+                            player.getaCommodityCards().get(StealableCard.Commodity.PAPER));
+                    continue;
+                case 2:
+                    pIncrement.setp3(
+                            player.getaGold(),
+                            player.getaResourceCards().get(StealableCard.Resource.ORE),
+                            player.getaResourceCards().get(StealableCard.Resource.BRICK),
+                            player.getaResourceCards().get(StealableCard.Resource.WOOD),
+                            player.getaResourceCards().get(StealableCard.Resource.SHEEP),
+                            player.getaResourceCards().get(StealableCard.Resource.WHEAT),
+                            player.getaCommodityCards().get(StealableCard.Commodity.COIN),
+                            player.getaCommodityCards().get(StealableCard.Commodity.CLOTH),
+                            player.getaCommodityCards().get(StealableCard.Commodity.PAPER));
+                    continue;
+                case 3:
+                    pIncrement.setp4(
+                            player.getaGold(),
+                            player.getaResourceCards().get(StealableCard.Resource.ORE),
+                            player.getaResourceCards().get(StealableCard.Resource.BRICK),
+                            player.getaResourceCards().get(StealableCard.Resource.WOOD),
+                            player.getaResourceCards().get(StealableCard.Resource.SHEEP),
+                            player.getaResourceCards().get(StealableCard.Resource.WHEAT),
+                            player.getaCommodityCards().get(StealableCard.Commodity.COIN),
+                            player.getaCommodityCards().get(StealableCard.Commodity.CLOTH),
+                            player.getaCommodityCards().get(StealableCard.Commodity.PAPER));
+                    continue;
+                }
+            }
+    }
+
+
+    @MessageMapping("/maritimetrade")
+    @SendTo("/topic/maritimetrade")
+    public ViewMaritimeTrade maritimeTrade(ViewMaritimeTrade pTrade, Principal caller){
+        System.out.println("We trading out here: maritime");
+        System.out.println("offer/give: "+pTrade.getaOffered());
+        System.out.println("request/get: "+pTrade.getaRequested());
+
+        MaritimeTrade aMaritimeTrade = pTrade.toMaritimeTrade(gameManager.getPlayerFromString(caller.getName()));
+        boolean isValid = gameManager.checkMaritimeTradeEligibility(aMaritimeTrade);
+        System.out.println("Valid: "+isValid);
+        if (isValid){
+            aMaritimeTrade.execute();
+        }
+        pTrade.setIsValid(isValid);
+        return pTrade;
+    }
+/* Robber */
+
+    @MessageMapping("/showvictorypoints")
+    @SendTo("/topic/victorypoints")
+    public ViewVictoryPoints showVictoryPoints(){
+        System.out.println("getVps");
+        ViewVictoryPoints pNew = new ViewVictoryPoints();
+        for (Player player : aGame.getPlayers()){
+            System.out.println(player + " has " + player.getaVPs());
+        }
+        for (Player player : aGame.getPlayers()){
+            if (player.getaIndex()==0) {
+                System.out.println("P1 "+player.getaVPs());
+
+                pNew.setP1points(player.getaVPs());
+            } else if  (player.getaIndex()==0) {
+                System.out.println("P1 "+player.getaVPs());
+
+                pNew.setP2points(player.getaVPs());
+            } else {
+                System.out.println("P1 "+player.getaVPs());
+                pNew.setP3points(player.getaVPs());
+            }
+        }
+        pNew.setPointsToWin(aGame.getaVPsToWin());
+        return pNew;
+    }
+
+    @MessageMapping("/placerobber")
+    @SendTo("/topic/placerobber")
+    public ViewRobber placeRobber(ViewRobber pRobber, Principal caller){
+        System.out.println("Robber being placed");
+        Player self = gameManager.getPlayerFromString(caller.getName());
+        Hex hex = gameManager.getGame().getBoard().getHexes().get(pRobber.getHexId());
+        boolean isValid = (hex.getTerrainType() != TerrainType.Sea);
+        boolean hasStealable = false;
+        for (Intersection neighbour : hex.getIntersectionNeighbours()){
+            if (neighbour.getBuilding() != null){
+                Player owner = neighbour.getBuilding().getOwner();
+                if (owner != self || owner.getaStealableCardAmount() > 0) {
+                    hasStealable = true;
+                    break;
                 }
             }
         }
-        */
+        System.out.println("Robber is on hex: " + hex.getId());
+        pRobber.setIsValid(isValid);
+        System.out.println("Valid : "+isValid);
+        pRobber.setHasStealable(hasStealable);
+        return pRobber;
+    }
+
+    @MessageMapping("/stealresource")
+    @SendTo("/topic/stealresource")
+    public ViewSteal stealResource(ViewSteal pSteal, Principal caller){
+        System.out.println("stealing");
+        Intersection intersection = gameManager.getGame().getBoard().getIntersections().get(pSteal.getIntersectionID());
+        Player stealer = gameManager.getPlayerFromString(caller.getName());
+        boolean isValid = intersection.getBuilding() != null && intersection.getBuilding().getOwner() != stealer && intersection.getBuilding().getOwner().getaStealableCardAmount() > 0;
+        System.out.println("Valid :"+ isValid);
+        if (isValid) {
+            Player victim = intersection.getBuilding().getOwner();
+            for (StealableCard.Resource card : StealableCard.Resource.values()){
+                if (victim.getaResourceCards().get(card) > 0){
+                    victim.removeResource(card, 1);
+                    stealer.addResource(card, 1);
+                }
+            }
+        }
+        pSteal.setIsValid(isValid);
+        return pSteal;
+    }
+
+
+
+
+    /* TRADE */
+    @MessageMapping("/traderequest")
+    @SendTo("/topic/traderequest")
+    public ViewPlayerTrade tradeRequest(ViewPlayerTrade pTrade, Principal caller){
+        return pTrade;
+    }
+
+    @MessageMapping("/playertrade")
+    @SendTo("/topic/playertrade")
+    public ViewPlayerTrade playerTrade(ViewPlayerTrade pTrade, Principal caller){
+        PlayerTrade aPlayerTrade = pTrade.toPlayerTrade();
+        boolean isValid = gameManager.checkPlayerTradeEligibility(aPlayerTrade);
+        if (isValid){
+            aPlayerTrade.execute();
+        }
+        pTrade.setValid(isValid);
+        return pTrade;
     }
 
     @MessageMapping("/endturn")
     @SendTo("/topic/turninfo")
     public PlayerAndPhase endTurn(Principal user){
-
-
-
-
-
         if(turnCounter == (currPlayerList.size()-1)){
-            System.out.println("first if");
-            System.out.println(currPlayerList.size()-1);
+            //System.out.println("first if");
+            //System.out.println(currPlayerList.size()-1);
             Collections.reverse(currPlayerList);
             currPlayerTurn = 0;
             pap.setSetup1(false);
             pap.setSetup2(true);
 
         }else if(turnCounter == (2*(currPlayerList.size())-1)){
-            System.out.println("second if");
-            System.out.println(currPlayerList.size()-1);
+            //System.out.println("second if");
+            //System.out.println(currPlayerList.size()-1);
             Collections.reverse(currPlayerList);
             currPlayerTurn = 0;
             pap.setSetup1(false);
@@ -324,97 +463,32 @@ public class GameController {
 
         pap.setUsername(currPlayerList.get(currPlayerTurn));
 
-        System.out.println("Player's Turn "+ currPlayerList.get(currPlayerTurn));
-        System.out.println("turn count = "+currPlayerTurn);
+        //System.out.println("Player's Turn "+ currPlayerList.get(currPlayerTurn));
+        //System.out.println("turn count = "+currPlayerTurn);
 
         this.turnCounter++;
-
+        for (String name : currPlayerList){
+            System.out.println(name);
+        }
         return pap;
     }
 
 
-    @MessageMapping("/edge")
-    public void getEdge(ViewEdge pEdge) throws Exception{
-        /*
-        Edge aEdge = new Edge(pEdge.getId());
-    //    System.out.println(aEdge.getId());
-    //    System.out.println(aEdge.getX());
-    //    System.out.println(aEdge.getY());
-    //    System.out.println(aEdge.getPrefix());
-        aGame.getEdges().put(aEdge.getId(),aEdge);
-        aGame.lEdges.add(aEdge);
-        */
-    }
-
     @MessageMapping("/hex")
-    public void getHex(String bigJson) throws Exception{
-        /*
+       public void getHex(String bigJson) throws Exception{
 
-        Hex aHex;
-       // System.out.println("Hexagon");
         JSONArray aArray = new JSONArray(bigJson);
         Gson gson = new Gson();
 
         for(int i=0;i<aArray.length();i++) {
-
-         //   System.out.println(i+" out of "+aArray.length());
             JSONObject jsonHex = aArray.getJSONObject(i);
-         //   System.out.println(jsonHex);
-
             ViewHex pHex = gson.fromJson(jsonHex.toString(), ViewHex.class);
-          //  System.out.println(pHex.getId());
-
-
-            switch (pHex.getTerrainType()) {
-                case "wood":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Forest);
-                    break;
-                case "ore":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Mountains);
-                    break;
-                case "brick":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Hills);
-                    break;
-                case "sheep":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Pasture);
-                    break;
-                case "gold":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.GoldMine);
-                    break;
-                case "wheat":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Fields);
-                    break;
-                case "desert":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Desert);
-                    break;
-                case "sea":
-                    aHex = new SeaHex(pHex.getId());
-                default:
-                    aHex = new SeaHex(pHex.getId());
-            }
-
-            aGame.getHexes().put(aHex.getId(), aHex);
-            aGame.lHexes.add(aHex);
+            gameManager.getGame().getBoard().setHex(pHex);
         }
-        */
+        //System.out.println("DONE");
+        gameManager.getGame().getBoard().makeEdges();
+        gameManager.getGame().getBoard().makeIntersections();
+        gameManager.getGame().getBoard().setAllNeighbours();
     }
 
-    @MessageMapping("/intersection")
-    public void getIntersection(ViewIntersection pIntersection) throws Exception{
-        /*
-    //    System.out.println("Intersection");
-        Intersection aIntersection = new Intersection(pIntersection.getId(), HarbourType.None);
-        aGame.getIntersections().put(aIntersection.getId(),aIntersection);
-        aGame.lIntersections.add(aIntersection);
-        */
-    }
-
-    @MessageMapping("/setNeighbours")
-    public void setNeighbours() throws Exception
-    {
-        /*
-     //   System.out.println("HNNNNNNNG");
-        aGame.setAllNeighbours();
-        */
-    }
 }

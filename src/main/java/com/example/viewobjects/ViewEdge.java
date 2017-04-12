@@ -12,6 +12,15 @@ public class ViewEdge {
     private String points;
     private String id;
 
+    public ViewEdge(double x, double y, String stroke, String stroke_width, String points, String id) {
+        this.x = x;
+        this.y = y;
+        this.stroke = stroke;
+        this.stroke_width = stroke_width;
+        this.points = points;
+        this.id = id;
+    }
+
 
     public double getX() {
         return x;
