@@ -391,6 +391,7 @@ public class GameManager {
     }
     public void placeSettlement(Player pPlayer, Intersection pIntersection){
         OwnedBuilding settlement = pPlayer.removeBuilding(Unit.Building.SETTLEMENT);
+        System.out.println(pPlayer + " has " + pPlayer.getaVPs() + " at setup settlement");
         pIntersection.setBuilding(settlement);
     }
     public boolean checkBuySettlement(Player pPlayer) {
@@ -447,6 +448,7 @@ public class GameManager {
     public void placeCity(Player pPlayer, Intersection pIntersection){
         OwnedBuilding city = pPlayer.removeBuilding(Unit.Building.CITY);
         pPlayer.addBuilding(Unit.Building.SETTLEMENT);
+        System.out.println(pPlayer + " has " + pPlayer.getaVPs() + " at setup city");
         pIntersection.setBuilding(city);
     }
     public boolean checkBuyCity(Player pPlayer){

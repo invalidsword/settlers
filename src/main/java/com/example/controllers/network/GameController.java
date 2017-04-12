@@ -351,6 +351,9 @@ public class GameController {
         System.out.println("getVps");
         ViewVictoryPoints pNew = new ViewVictoryPoints();
         for (Player player : aGame.getPlayers()){
+            System.out.println(player + " has " + player.getaVPs());
+        }
+        for (Player player : aGame.getPlayers()){
             if (player.getaIndex()==0) {
                 System.out.println("P1 "+player.getaVPs());
 
