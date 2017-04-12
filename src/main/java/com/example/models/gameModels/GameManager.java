@@ -554,8 +554,14 @@ public class GameManager {
         pTrade.execute();
     }
 
-    public void maritimeTrade(Player pPlayer, StealableCard.Resource pResource, int pAmount){
-        new MaritimeTrade(pPlayer, pResource, pAmount);
+    /* MARITIME */
+
+    public boolean checkMaritimeTradeEligibility(MaritimeTrade pTrade){
+        Player requester = pTrade.getaRequester();
+        Map<StealableCard.Resource, Integer> requesterResources = requester.getaResourceCards();
+        if(requesterResources.get(pTrade.getaOfferedResource()) >= 4)
+            return true;
+        return false;
     }
 
     public void endTurn(){

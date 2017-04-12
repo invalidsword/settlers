@@ -124,6 +124,8 @@ var knight;
 //var myUsername = [[${username}]];
 var stompClient = null;
 
+var enableSteal = false;
+var enableMoveRobber = false;
 
 var settlementPlaced = false; /*Indicates whether the first settlement has been placed in the setup phase*/
 var road1Placed = false;    /*Indicates whther the first road has been placed in the setup phase*/
@@ -499,7 +501,7 @@ function connect() {
 
         });
 
-        stompClient.subscribe('/topic/trade', function (trade) {
+        stompClient.subscribe('/topic/traderequest', function (trade) {
             trade = JSON.parse((trade.body));
 
 
@@ -521,8 +523,48 @@ function connect() {
 
         });
 
+        stompClient.subscribe('/topic/maritimetrade', function(piece){
+            piece = JSON.parse((piece.body));
+            var valid = piece.isValid;
+            if(valid) {
+                if(currUser.match(myUsername)) {
+                    getResources();
+                }
+            }
+        });
 
+        stompClient.subscribe('/topic/robber', function(bool) {
+            if (currUser.match(myUsername)) {
+                enableMoveRobber = true;
+            }
+        });
 
+        stompClient.subscribe('/topic/placerobber', function(robber) {
+            robber = JSON.parse((robber.body));
+            if (currUser.match(myUsername)) {
+                if(robber.isValid){
+                    enableMoveRobber = false;
+                    if (robber.hasStealable){
+                        enableSteal = true;
+                    }
+                }else{
+                    enableMoveRobber = true;
+                }
+            }
+        });
+
+        stompClient.subscribe('/topic/stealresource', function(steal){
+            steal = JSON.parse((steal.body));
+            if (currUser.match(myUsername)){
+                if (steal.isValid){
+                    enableMyButtons();
+                    enableSteal = false;
+                }else{
+                    disableMyButtons();
+                    enableSteal = true;
+                }
+            }
+        });
 
     });
 }
@@ -559,11 +601,11 @@ function setupDone(){
 }
 
 function requestTrade(trade){
-    stompClient.send("/app/trade",{},JSON.stringify(trade))
+    stompClient.send("/app/traderequest",{},JSON.stringify(trade))
 }
 
 function SendMaritime(get,give) {
-    stompClient.send("/app/maritimetrade",{},JSON.stringify({"get":get, "give":give, "isValid":false}))
+    stompClient.send("/app/maritimetrade",{},JSON.stringify({"aRequested":get, "aOffered":give, "isValid":false}))
 }
 
 //Roll Dice
@@ -679,6 +721,7 @@ function disableMyButtons(){
     document.getElementById('bKnight').disabled = true;
     document.getElementById('uKnight').disabled = true;
     document.getElementById('mShip').disabled = true;
+    document.getElementById('maritimeTrade').disabled = true;
 
 }
 
@@ -694,6 +737,8 @@ function enableMyButtons(){
     document.getElementById('bKnight').disabled = false;
     document.getElementById('uKnight').disabled = false;
     document.getElementById('mShip').disabled = false;
+    document.getElementById('maritimeTrade').disabled = false;
+
 
 }
 
@@ -920,7 +965,21 @@ function activateKnight() {
     }
 }*/
 
-/*  */
+/* Robber */
+
+
+function moveRobber(id){
+    console.log("send robber");
+    stompClient.send("/app/placerobber",{},JSON.stringify({"hexId":id,"isValid":false,"hasStealable":false}));
+}
+
+function stealResource(id){
+    stompClient.send("/app/stealresource", {}, JSON.stringify({"intersectionID":id, "isValid":false}))
+}
+
+
+
+/* Trade */
 
 function startTimer()
 {
@@ -1096,28 +1155,28 @@ function mTradeSend() {
     var get;
     var ok = true;
     if(mgetBrick)
-        get = 'brick';
+        get = 'Brick';
     else if(mgetWood)
-        get = 'wood';
+        get = 'Wood';
     else if(mgetOre)
-        get = 'ore';
+        get = 'Ore';
     else if(mgetSheep)
-        get = 'sheep';
+        get = 'Sheep';
     else if(mgetWheat)
-        get = 'wheat';
+        get = 'Wheat';
     else
         ok = false;
 
     if(mgiveBrick)
-        give = 'brick';
+        give = 'Brick';
     else if(mgiveWood)
-        give = 'wood';
+        give = 'Wood';
     else if(mgiveOre)
-        give = 'ore';
+        give = 'Ore';
     else if(mgiveSheep)
-        give = 'sheep';
+        give = 'Sheep';
     else if(mgiveWheat)
-        give = 'wheat';
+        give = 'Wheat';
     else
         ok = false;
 
@@ -1127,10 +1186,10 @@ function mTradeSend() {
 
 
 function mTrade(){
-    reset = document.getElementById('mtNum').value = '';
-    document.getElementById('tradeP1').innerHTML = p1;
-    document.getElementById('tradeP2').innerHTML = p2name;
-    document.getElementById('tradeP3').innerHTML = p3name;
+   // reset = document.getElementById('mtNum').value = '';
+    document.getElementById('tradeP1').text = p1name;
+    document.getElementById('tradeP2').text = "lolcat";
+    document.getElementById('tradeP3').text = p3name;
 }
 
 
@@ -1187,6 +1246,8 @@ function aTrade(){
     reset = document.getElementById('ptrGetCloth').value = document.getElementById('ptGiveCloth').value;
     reset = document.getElementById('ptrGetPaper').value = document.getElementById('ptGivePaper').value;
     reset = document.getElementById('ptrGetCoin').value = document.getElementById('ptGiveCoin').value;
+
+    requestTrade();
 }
 
 
@@ -1651,6 +1712,16 @@ function init() {
         .attr("id", function(d) { return d.id; }) // NEW
         .attr("number", function(d) { return d.number; }) // NEW
         .attr("stroke-width", function (d) { return d.stroke_width; })
+        .on("click", function (d) {
+
+            if(currUser.match(myUsername)){  // what is this
+                console.log("on click hex");
+                if(enableMoveRobber){
+                    moveRobber(d.id);
+                }
+
+            }
+        })
         .style("fill", function (d) {if (d.terrain_type === "sea"){ return "#336699";}
         else if(d.terrain_type === "wheat") { return "#ffff66";}
         else if(d.terrain_type === "sheep"){ return "#99ff66";}

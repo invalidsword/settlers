@@ -17,6 +17,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Random;
 
 @Controller
 public class GameController {
@@ -330,16 +331,110 @@ public class GameController {
     @MessageMapping("/maritimetrade")
     @SendTo("/topic/maritimetrade")
     public ViewMaritimeTrade maritimeTrade(ViewMaritimeTrade pTrade, Principal caller){
-        MaritimeTrade aMaritimeTrade = pTrade.toMaritimeTrade();
+        System.out.println("We trading out here: maritime");
+        System.out.println("offer/give: "+pTrade.getaOffered());
+        System.out.println("request/get: "+pTrade.getaRequested());
+
+        MaritimeTrade aMaritimeTrade = pTrade.toMaritimeTrade(gameManager.getPlayerFromString(caller.getName()));
         boolean isValid = gameManager.checkMaritimeTradeEligibility(aMaritimeTrade);
+        System.out.println("Valid: "+isValid);
         if (isValid){
             aMaritimeTrade.execute();
         }
-        pTrade.setValid(isValid);
+        pTrade.setIsValid(isValid);
         return pTrade;
+    }
+/* Robber */
+
+
+    @SendTo("/topic/robber")
+    public boolean moveRobber(){
+        return true;
+    }
+
+    @MessageMapping("/placerobber")
+    @SendTo("/topic/placerobber")
+    public ViewRobber placeRobber(ViewRobber pRobber){
+        Hex hex = gameManager.getGame().getBoard().getHexes().get(pRobber.getHexId());
+        boolean isValid = (hex.getTerrainType() != TerrainType.Sea);
+        boolean hasStealable = false;
+        for (Intersection neighbour : hex.getIntersectionNeighbours()){
+            if (neighbour.getBuilding() != null){
+                Player owner = neighbour.getBuilding().getOwner();
+                if (owner.getaStealableCardAmount() > 0) {
+                    hasStealable = true;
+                    break;
+                }
+            }
+        }
+        System.out.println("Robber is on hex: " + hex.toString());
+        pRobber.setValid(isValid);
+        pRobber.setHasStealable(hasStealable);
+        return pRobber;
+    }
+
+    @MessageMapping("/stealresource")
+    @SendTo("/topic/stealresource")
+    public ViewSteal stealResource(ViewSteal pSteal, Principal caller){
+        Intersection intersection = gameManager.getGame().getBoard().getIntersections().get(pSteal.getIntersectionID());
+        Player stealer = gameManager.getPlayerFromString(caller.getName());
+        boolean isValid = intersection.getBuilding().getOwner() != null && intersection.getBuilding().getOwner().getaStealableCardAmount() > 0;
+        if (isValid){
+            Player victim = intersection.getBuilding().getOwner();
+            StealableCard.Resource aResource = null;
+            StealableCard.Commodity aCommodity = null;
+            boolean hasResource = false;
+            boolean hasCommodity = false;
+            for (StealableCard.Resource resource : victim.getaResourceCards().keySet()){
+                if (victim.getaResourceCards().get(resource) > 0){
+                    hasResource = true;
+                    break;
+                }
+            }
+            for (StealableCard.Commodity commodity : victim.getaCommodityCards().keySet()){
+                if (victim.getaCommodityCards().get(commodity) > 0){
+                    hasCommodity = true;
+                    break;
+                }
+            }
+
+            do{
+                Random random = new Random();
+                int rng = random.nextBoolean() ? 1 : 2;
+                switch(rng) {
+                    case 1:
+                        if (hasResource) {
+                            aResource = StealableCard.Resource.values()[(int) Math.random() * StealableCard.Resource.values().length];
+                            if (victim.getaResourceCards().get(aResource) > 0) {
+                                break;
+                            }
+                        }
+                    case 2:
+                        if (hasCommodity) {
+                            aCommodity = StealableCard.Commodity.values()[(int) Math.random() * StealableCard.Commodity.values().length];
+                            if (victim.getaCommodityCards().get(aCommodity) > 0){
+                                break;
+                            }
+                        }
+                }
+            }while(aResource == null || aCommodity == null);
+            if (aResource != null){
+                victim.removeResource(aResource,1);
+                stealer.addResource(aResource, 1);
+            }
+            else if (aCommodity != null){
+                victim.removeCommodity(aCommodity,1);
+                stealer.addCommodity(aCommodity, 1);
+            }
+        }
+        pSteal.setValid(isValid);
+        return pSteal;
     }
 
 
+
+
+    /* TRADE */
     @MessageMapping("/traderequest")
     @SendTo("/topic/traderequest")
     public ViewPlayerTrade tradeRequest(ViewPlayerTrade pTrade, Principal caller){

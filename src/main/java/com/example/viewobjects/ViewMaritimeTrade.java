@@ -1,48 +1,44 @@
 package com.example.viewobjects;
 
-import com.example.models.gameModels.*;
+import com.example.models.gameModels.MaritimeTrade;
+import com.example.models.gameModels.Player;
+import com.example.models.gameModels.StealableCard;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.HashMap;
 
 /**
  * Created by Ming-PC on 4/9/2017.
  */
 public class ViewMaritimeTrade {
     @Autowired
-    private GameManager gameManager;
-
-    private String requester;
     private boolean isValid;
-    private int aAmountRequested;
     private String aRequested;
+
+    public String getaRequested() {
+        return aRequested;
+    }
+
+    public void setaRequested(String aRequested) {
+        this.aRequested = aRequested;
+    }
+
     private String aOffered;
+
+    public String getaOffered() {
+        return aOffered;
+    }
+
+    public void setaOffered(String aOffered) {
+        this.aOffered = aOffered;
+    }
 
     public ViewMaritimeTrade(){
     }
 
-    public String getRequester() {
-        return requester;
-    }
-
-    public void setRequester(String requester) {
-        this.requester = requester;
-    }
-
-    public int getaAmountRequested() {
-        return aAmountRequested;
-    }
-
-    public void setaAmountRequested(int aAmountRequested) {
-        this.aAmountRequested = aAmountRequested;
-    }
-
-
-    public boolean isValid() {
+    public boolean getIsValid() {
         return isValid;
     }
 
-    public void setValid(boolean valid) {
+    public void setIsValid(boolean valid) {
         isValid = valid;
     }
 
@@ -62,14 +58,12 @@ public class ViewMaritimeTrade {
         return null;
     }
 
-    public MaritimeTrade toMaritimeTrade(){
+    public MaritimeTrade toMaritimeTrade(Player pPlayer){
         MaritimeTrade aRet = new MaritimeTrade();
-        Player aRequester = gameManager.getPlayerFromString(requester);
-        aRet.setaRequester(aRequester);
+        aRet.setaRequester(pPlayer);
         aRet.setaOfferedResource(stringToResource(aOffered));
         aRet.setaRequestedResource(stringToResource(aRequested));
-        aRet.setaRequestedAmount(aAmountRequested);
-        aRet.setaTradeRate(aRequester.getaMaritimeTradeRates().get(aOffered));
+     //   aRet.setaTradeRate(pPlayer.getaMaritimeTradeRates().get(aOffered));
         return aRet;
     }
-}a
+}

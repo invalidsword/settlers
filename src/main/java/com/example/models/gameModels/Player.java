@@ -22,6 +22,7 @@ public class Player {
     private final int aIndex;
     private int aVPs;
     private int aGold;
+    private int aStealableCardAmount;
     private int aRouteLength;
     private int aProgressCardAmount;
     private int aArmySize;
@@ -67,6 +68,7 @@ public class Player {
         aIndex = pIndex;
         aVPs = 0;
         aGold = 0;
+        aStealableCardAmount = 0;
         aRouteLength = 0;
         aArmySize = 0;
         aProgressCardAmount = 0;
@@ -98,6 +100,14 @@ public class Player {
         for (Unit.Transport transport : Unit.Transport.values()) {
             aTransports.put(transport, Unit.Transport.maxTransports());
         }
+    }
+
+    public int getaStealableCardAmount() {
+        return aStealableCardAmount;
+    }
+
+    public void setaStealableCardAmount(int aStealableCardAmount) {
+        this.aStealableCardAmount = aStealableCardAmount;
     }
 
     public void setaResourceCards(Map<StealableCard.Resource, Integer> aResourceCards) {
@@ -360,21 +370,24 @@ public class Player {
     //add and remove resources
     public void addResource(StealableCard.Resource pResource, int pAmount) {
         aResourceCards.put(pResource, aResourceCards.get(pResource) + pAmount);
+        aStealableCardAmount += pAmount;
     }
     public void removeResource(StealableCard.Resource pResource, int pAmount) {
         assert (aResourceCards.get(pResource) >= pAmount);
         aResourceCards.put(pResource, aResourceCards.get(pResource) - pAmount);
+        aStealableCardAmount -= pAmount;
     }
 
     //add and remove commodities
     public void addCommodity(StealableCard.Commodity pCommodity, int pAmount) {
         aCommodityCards.put(pCommodity, aCommodityCards.get(pCommodity) + pAmount);
+        aStealableCardAmount += pAmount;
     }
     public void removeCommodity(StealableCard.Commodity pCommodity, int pAmount) {
         assert (aCommodityCards.get(pCommodity) >= pAmount);
         aCommodityCards.put(pCommodity, aCommodityCards.get(pCommodity) - pAmount);
+        aStealableCardAmount -= pAmount;
     }
-
     //add and remove trade progress cards
     public void addTradeCard(ProgressCard.Trade pTradeCard) {
         if (aTradeCards.containsKey(pTradeCard)) {
