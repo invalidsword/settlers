@@ -492,7 +492,7 @@ function connect() {
             document.getElementById('P2Vp').style.width = p2PTS+"%";
             document.getElementById('P3Vp').style.width = p3PTS+"%";
 
-            if(p1points >= 3){
+            if(p1points >= 10){
                 if(p2points>p3points)
                     openNav(p1name,p2name,p3name);
                 else
