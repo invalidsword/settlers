@@ -61,6 +61,9 @@ public class Game {
     private DiceNumber aYellowDice;
     private EventType aEventDice;
     private int aTurnCounter;
+    private String gameName;
+
+
 
 
 
@@ -121,6 +124,12 @@ public class Game {
     public List<Player> getPlayers(){
         return aPlayers;
     }
+
+    public String getGameName(){
+        return getGameName();
+    }
+
+    public void setGameName(String pGameName){this.gameName = pGameName;}
 
     public EventType getEventDice(){
         return aEventDice;

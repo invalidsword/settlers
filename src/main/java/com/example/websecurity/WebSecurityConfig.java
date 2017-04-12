@@ -43,6 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/gameroom.html", true)
                 .and()
                 .csrf()
+                .disable()
                 ;
     }
 

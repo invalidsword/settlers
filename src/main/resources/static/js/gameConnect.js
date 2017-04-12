@@ -46,6 +46,9 @@ $(function () {
    // $("#connect").click(function() { connect(); });
     $("#joingame").click(function() { go(); $("#joingame").prop("disabled", true);});
 
+
 });
+
+
 
 //]]>

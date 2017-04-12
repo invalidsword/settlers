@@ -166,7 +166,6 @@ public class GameController {
     @MessageMapping("/setupsettlement")
     @SendTo("/topic/settlement")
     public ViewPiece setupSettlement(ViewPiece pNew, Principal caller){
-        System.out.println("Check settlement");
         Player checkee = gameManager.getPlayerFromString(caller.getName());
         Intersection checker = gameManager.getGame().getBoard().getIntersections().get(pNew.getId());
         boolean isValid = gameManager.checkIntersectionSetupEligibility(checker);
@@ -180,7 +179,6 @@ public class GameController {
     @MessageMapping("/setupcity")
     @SendTo("/topic/city")
     public ViewPiece setupCity(ViewPiece pNew, Principal caller){
-        System.out.println("Check city");
         Player checkee = gameManager.getPlayerFromString(caller.getName());
         Intersection checker = gameManager.getGame().getBoard().getIntersections().get(pNew.getId());
         boolean isValid = gameManager.checkIntersectionSetupEligibility(checker);
@@ -194,17 +192,13 @@ public class GameController {
     @MessageMapping("/setuproad")
     @SendTo("/topic/road")
     public ViewPiece setupRoad(ViewPiece pNew, Principal caller) {
-        System.out.println("----  "+pNew.getId());
         Player checkee = gameManager.getPlayerFromString(caller.getName());
         Edge checker = gameManager.getGame().getBoard().getEdges().get(pNew.getId());
         boolean isValid = gameManager.checkRoadEligibility(checker, pNew.getColor());
         if (isValid){
-            System.out.println("VALID");
             gameManager.placeRoad(checkee, checker);
         }
-        System.out.println("5");
         pNew.setIsValid(isValid);
-        System.out.println("returning");
         return pNew;
     }
 
@@ -293,6 +287,11 @@ public class GameController {
         return pTrade;
     }
 
+    @MessageMapping("/savegame")
+    public void saveGame(){
+        GameRoomController.savedGames.add(gameManager.getGame());
+    }
+
     @MessageMapping("/playertrade")
     @SendTo("/topic/playertrade")
     public ViewPlayerTrade playerTrade(ViewPlayerTrade pTrade, Principal caller){
@@ -309,16 +308,13 @@ public class GameController {
     @SendTo("/topic/turninfo")
     public PlayerAndPhase endTurn(Principal user){
         if(turnCounter == (currPlayerList.size()-1)){
-            //System.out.println("first if");
-            //System.out.println(currPlayerList.size()-1);
             Collections.reverse(currPlayerList);
             currPlayerTurn = 0;
             pap.setSetup1(false);
             pap.setSetup2(true);
 
-        }else if(turnCounter == (2*(currPlayerList.size())-1)){
-            //System.out.println("second if");
-            //System.out.println(currPlayerList.size()-1);
+        }
+        else if(turnCounter == (2*(currPlayerList.size())-1)){
             Collections.reverse(currPlayerList);
             currPlayerTurn = 0;
             pap.setSetup1(false);
@@ -329,14 +325,7 @@ public class GameController {
         }
 
         pap.setUsername(currPlayerList.get(currPlayerTurn));
-
-        //System.out.println("Player's Turn "+ currPlayerList.get(currPlayerTurn));
-        //System.out.println("turn count = "+currPlayerTurn);
-
         this.turnCounter++;
-        for (String name : currPlayerList){
-            System.out.println(name);
-        }
         return pap;
     }
 
@@ -352,10 +341,11 @@ public class GameController {
             ViewHex pHex = gson.fromJson(jsonHex.toString(), ViewHex.class);
             gameManager.getGame().getBoard().setHex(pHex);
         }
-        //System.out.println("DONE");
         gameManager.getGame().getBoard().makeEdges();
         gameManager.getGame().getBoard().makeIntersections();
         gameManager.getGame().getBoard().setAllNeighbours();
     }
+
+
 
 }

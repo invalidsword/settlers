@@ -91,7 +91,6 @@ public class Board {
                 aLandHexes.get(aHex.getProductionNumber()).add(aHex);
                 break;
             case "wheat":
-//                System.out.println("Here1");
                 aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Fields);
                 aHexes.put(aHex.getId(), aHex);
                 aLandHexes.get(aHex.getProductionNumber()).add(aHex);
@@ -139,23 +138,18 @@ public class Board {
 
     public void setAllNeighbours(){
         for (String aKey : aHexes.keySet()){
-            //System.out.println(aHexes.get(aKey).getId());
-            //System.out.println(aHexes.get(aKey).getId());
             aHexes.get(aKey).setIntersectionNeighbours(aIntersections);
             aHexes.get(aKey).setHexNeighbours(aHexes);
             aHexes.get(aKey).setEdgeNeighbours(aEdges);
         }
 
         for (String aKey : aEdges.keySet()){
-            //System.out.println(aEdges.get(aKey).getId());
-            //System.out.println(aEdges.get(aKey).getId());
             aEdges.get(aKey).setIntersectionNeighbours(aIntersections);
             aEdges.get(aKey).setHexNeighbours(aHexes);
             aEdges.get(aKey).setEdgeNeighbours(aEdges);
         }
 
         for (String aKey : aIntersections.keySet()){
-            //System.out.println(aIntersections.get(aKey).getId());
             aIntersections.get(aKey).setIntersectionNeighbours(aIntersections);
             aIntersections.get(aKey).setHexNeighbours(aHexes);
             aIntersections.get(aKey).setEdgeNeighbours(aEdges);

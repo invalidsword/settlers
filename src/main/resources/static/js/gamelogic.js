@@ -152,6 +152,10 @@ colorList.push(p2color);
 colorList.push(p3color);
 //colorList.push(p4color);
 
+console.log("p1name: "+p1name);
+console.log("p2name: "+p2name);
+console.log("p3name: "+p3name);
+
 
 var usersToPrint = [];
 var colorsToPrint = [];
@@ -343,7 +347,6 @@ function connect() {
                 }
 
 
-
             }else{
                 if(currUser.match(myUsername)){
                     //place alert invalid road here
@@ -352,10 +355,6 @@ function connect() {
                 }
 
             }
-
-
-
-
 
         });
 
@@ -370,9 +369,9 @@ function connect() {
 
             if (myUsername.match(p1name)){
                 me = me+'1';
-            }else if (myUsername.match(p1name)){
-                me = me+'2';
             }else if (myUsername.match(p2name)){
+                me = me+'2';
+            }else if (myUsername.match(p3name)){
                 me = me+'3';
             }else{
                 me = me+'4';
@@ -1080,6 +1079,7 @@ function giveOre() {
         gOre.innerHTML = "Give/Get";
         oreClick = 0;
     }
+
 }
 
 function giveSheep() {
@@ -1205,6 +1205,11 @@ function getSheep() {
 function getWheat() {
     gWheat = document.getElementById("tradeWheat");
     gWheat.innerHTML = "Get 1";
+}
+
+function maritimeTrade(){
+
+
 }
 
 function trade() {
@@ -2097,6 +2102,8 @@ var intersectionAttrs = boardIntersections
                         }
 
                     }else if(clickBuyKnight){
+
+
 
                     }else if(clickActivateKnight){
 
