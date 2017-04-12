@@ -34,13 +34,9 @@ public class Board {
 
 
     public Board(){
-        aHexes = new HashMap<>();
-        aEdges = new HashMap<>();
-        aIntersections = new HashMap<>();
-        aLandHexes = new HashMap<>();
-        for(int i = 2; i<=12;i++)
+        for (int i = 2; i <= 12; i++){
             aLandHexes.put(i, new ArrayList<LandHex>());
-
+        }
     }
 
 
@@ -63,28 +59,33 @@ public class Board {
         return aLandHexes;
     }
 
+    /*
     public void setHex(ViewHex pHex){
-        //System.out.println("HEX");
+        System.out.println(pHex.getTerrainType());
         switch (pHex.getTerrainType()) {
             case "wood":
                 LandHex aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Forest);
                 aHexes.put(aHex.getId(), aHex);
                 aLandHexes.get(aHex.getProductionNumber()).add(aHex);
+                System.out.println("HELLLLLLLLOOOOOO BILLY BOB");
                 break;
             case "ore":
                 LandHex bHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Mountains);
                 aHexes.put(bHex.getId(), bHex);
                 aLandHexes.get(bHex.getProductionNumber()).add(bHex);
+                System.out.println("HELLLLLLLLOOOOOO BILLY BOB");
                 break;
             case "brick":
                 LandHex cHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Hills);
                 aHexes.put(cHex.getId(), cHex);
                 aLandHexes.get(cHex.getProductionNumber()).add(cHex);
+                System.out.println("HELLLLLLLLOOOOOO BILLY BOB");
                 break;
             case "sheep":
                 LandHex dHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Pasture);
                 aHexes.put(dHex.getId(), dHex);
                 aLandHexes.get(dHex.getProductionNumber()).add(dHex);
+                System.out.println("HELLLLLLLLOOOOOO BILLY BOB");
                 break;
             case "gold":
                 LandHex eHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.GoldMine);
@@ -95,6 +96,7 @@ public class Board {
                 LandHex fHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Fields);
                 aHexes.put(fHex.getId(), fHex);
                 aLandHexes.get(fHex.getProductionNumber()).add(fHex);
+                System.out.println("HELLLLLLLLOOOOOO BILLY BOB");
                 break;
             case "desert":
                 LandHex gHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Desert);
@@ -107,6 +109,7 @@ public class Board {
                 hHex = new SeaHex(pHex.getId());
         }
     }
+    */
 
     public void setIntersection(ViewIntersection pIntersection){
         //System.out.println(pIntersection.getId());

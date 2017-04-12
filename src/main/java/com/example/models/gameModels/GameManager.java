@@ -134,10 +134,14 @@ public class GameManager {
     private void checkDice() {
         int numberRolled = aGame.getRedDice().add(aGame.getYellowDice());
         ArrayList<LandHex> tempLandHexes = aGame.getBoard().getLandHexes().get(numberRolled);
+        System.out.print("tempLandHexex: "+tempLandHexes.size());
         for (LandHex hex : tempLandHexes) {
+            System.out.println(hex.getProductionNumber());
             List<Intersection> tempIntersections = hex.getIntersectionNeighbours();
             for (Intersection intersection : tempIntersections) {
+                System.out.println(intersection.getOccupancyFlag());
                 if (intersection.getOccupancyFlag()) {
+                    System.out.println("I'm PAYIN OUT!!!!");
                     Player owner = getPayee(intersection);
                     boolean isCity = checkIsCity(intersection);
                     payout(owner, hex.getTerrainType(), isCity);
@@ -159,23 +163,27 @@ public class GameManager {
         System.out.println("SDFSDFSDFSDFSDFSDFSDFSDFSHBDFJHNB LDKNFLVKJFLDK NLFKHB>KSKDJHFVKJDB >DFJNV>KJSBR>KHUJBS>KRJH");
         if (pTerrainType == TerrainType.GoldMine){
             pOwner.addGold();
+            System.out.println(pOwner.getaUsername() + " got gold");
         }
         else {
             StealableCard.Resource resource = pTerrainType.giveResource();
+            System.out.println(pOwner.getaUsername() + " got " + resource.toString());
             pOwner.addResource(resource, 1);
         }
 
         if (isCity) {
-            StealableCard.Resource resource = pTerrainType.giveResource();
             if (pTerrainType == TerrainType.Hills || pTerrainType == TerrainType.Fields){
+                StealableCard.Resource resource = pTerrainType.giveResource();
+                System.out.println(pOwner.getaUsername() + " got " + resource.toString());
                 pOwner.addResource(resource, 1);
             }
             else if (pTerrainType == TerrainType.GoldMine){
                 pOwner.addGold();
+                System.out.println(pOwner.getaUsername() + " got gold");
             }
             else{
-                //if (aGame.getEventDice().equals(pOwner.)) TODO -- CHECK PLAYERS COMMODITY UPGRADE LVL
                 StealableCard.Commodity commodity = pTerrainType.giveCommodity();
+                System.out.println(pOwner.getaUsername() + " got " + commodity.toString());
                 pOwner.addCommodity(commodity, 1);
             }
         }
@@ -188,7 +196,11 @@ public class GameManager {
                 Intersection cityLocation = intersection.getValue();
                 for(Hex hex : cityLocation.getHexNeighbours()){
                     TerrainType pTerrainType = hex.getTerrainType();
+                    if (pTerrainType == TerrainType.Sea || pTerrainType == TerrainType.Desert){
+                        continue;
+                    }
                     StealableCard.Resource resource = pTerrainType.giveResource();
+                    System.out.println(owner.getaUsername() + " got " + resource.toString());
                     owner.addResource(resource, 1);
                 }
             }
