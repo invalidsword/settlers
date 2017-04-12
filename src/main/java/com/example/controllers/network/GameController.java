@@ -341,143 +341,21 @@ public class GameController {
     }
 
 
-    @MessageMapping("/edge")
-    public String getEdge(String edgeString) throws Exception{
-
-        //System.out.println("   Adding Edges to Hash");
-        JSONArray aArray = new JSONArray(edgeString);
-        Gson gson = new Gson();
-
-        for(int i=0;i<aArray.length();i++) {
-            JSONObject jsonHex = aArray.getJSONObject(i);
-
-            ViewEdge pEdge = gson.fromJson(jsonHex.toString(), ViewEdge.class);
-            Edge aEdge = new Edge(pEdge.getId());
-            gameManager.getGame().getBoard().getEdges().put(aEdge.getId(), aEdge);
-        }
-        return "edge";
-    }
-
     @MessageMapping("/hex")
-   // @SendTo("/topic/geo")
-    public String getHex(String bigJson) throws Exception{
-        //System.out.println("   Adding Hexes to Hash");
+       public void getHex(String bigJson) throws Exception{
 
         JSONArray aArray = new JSONArray(bigJson);
         Gson gson = new Gson();
 
         for(int i=0;i<aArray.length();i++) {
             JSONObject jsonHex = aArray.getJSONObject(i);
-
             ViewHex pHex = gson.fromJson(jsonHex.toString(), ViewHex.class);
-            System.out.println(pHex.getNumber());
-            System.out.println(pHex.getTerrainType());
-            switch (pHex.getTerrainType()) {
-                case "wood":
-                    LandHex aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Forest);
-                    gameManager.getGame().getBoard().getHexes().put(aHex.getId(), aHex);
-                    gameManager.getGame().getBoard().getLandHexes().get(aHex.getProductionNumber()).add(aHex);
-                    break;
-                case "ore":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Mountains);
-                    gameManager.getGame().getBoard().getHexes().put(aHex.getId(), aHex);
-                    gameManager.getGame().getBoard().getLandHexes().get(aHex.getProductionNumber()).add(aHex);
-                    break;
-                case "brick":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Hills);
-                    gameManager.getGame().getBoard().getHexes().put(aHex.getId(), aHex);
-                    gameManager.getGame().getBoard().getLandHexes().get(aHex.getProductionNumber()).add(aHex);
-                    break;
-                case "sheep":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Pasture);
-                    gameManager.getGame().getBoard().getHexes().put(aHex.getId(), aHex);
-                    gameManager.getGame().getBoard().getLandHexes().get(aHex.getProductionNumber()).add(aHex);
-                    break;
-                case "gold":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.GoldMine);
-                    gameManager.getGame().getBoard().getHexes().put(aHex.getId(), aHex);
-                    gameManager.getGame().getBoard().getLandHexes().get(aHex.getProductionNumber()).add(aHex);
-                    break;
-                case "wheat":
-                    System.out.println("Here1");
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Fields);
-                    System.out.println("Here2");
-                    gameManager.getGame().getBoard().getHexes().put(aHex.getId(), aHex);
-                    System.out.println("Here3");
-                    gameManager.getGame().getBoard().getLandHexes().get(aHex.getProductionNumber()).add(aHex);
-                    System.out.println("Here4");
-                    break;
-                case "desert":
-                    aHex = new LandHex(pHex.getId(), pHex.getNumber(), TerrainType.Desert);
-                    gameManager.getGame().getBoard().getHexes().put(aHex.getId(), aHex);
-                    break;
-                case "sea":
-                    SeaHex hHex = new SeaHex(pHex.getId());
-                default:
-                     hHex = new SeaHex(pHex.getId());
-            }
+            gameManager.getGame().getBoard().setHex(pHex);
         }
         //System.out.println("DONE");
         gameManager.getGame().getBoard().makeEdges();
         gameManager.getGame().getBoard().makeIntersections();
-
-        return "hex";
-    }
-
-    @MessageMapping("/intersection")
-  //  @SendTo("/topic/geo")
-    public String getIntersection(String intersectionString) throws Exception{
-        //System.out.println("   Adding Intersections to Hash");
-
-        JSONArray aArray = new JSONArray(intersectionString);
-        Gson gson = new Gson();
-
-        for(int i=0;i<aArray.length();i++) {
-            JSONObject jsonHex = aArray.getJSONObject(i);
-
-            ViewIntersection pIntersection = gson.fromJson(jsonHex.toString(), ViewIntersection.class);
-            Intersection aIntersection = new Intersection(pIntersection.getId(), HarbourType.None);
-            gameManager.getGame().getBoard().getIntersections().put(aIntersection.getId(), aIntersection);
-        }
-        return "intersection";
-    }
-
-/*
-    @MessageMapping("/geo")
-    public void getBoard(String aBoard) throws Exception{
-        //System.out.println("set everything");
-        JSONArray aArray = new JSONArray(aBoard);
-        Gson gson = new Gson();
-        //System.out.println(aArray.length());
-
-        for(int i=0;i<aArray.length();i++) {
-
-            JSONObject jsonGeo = aArray.getJSONObject(i);
-
-            ViewIntersection pIntersection = gson.fromJson(jsonGeo.toString(), ViewIntersection.class);
-            ViewEdge pEdge = gson.fromJson(jsonGeo.toString(), ViewEdge.class);
-            ViewHex pHex = gson.fromJson(jsonGeo.toString(), ViewHex.class);
-
-            if(pEdge != null)
-                gameManager.getGame().getBoard().setEdge(pEdge);
-            if(pHex != null){
-                System.out.println("HERE BOIS");
-                gameManager.getGame().getBoard().setHex(pHex);
-                System.out.println("HERE BOIS ANOTHER ONE");
-            }
-            if(pIntersection != null)
-                gameManager.getGame().getBoard().setIntersection(pIntersection);
-        }
-
-    }
-*/
-
-    @MessageMapping("/setNeighbours")
-    public void setNeighbours() throws Exception
-    {
-        //System.out.println("settingNeighbours");
         gameManager.getGame().getBoard().setAllNeighbours();
-        //gameManager.saveGame();
-
     }
+
 }

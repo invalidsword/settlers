@@ -2015,7 +2015,6 @@ function init() {
   //  sendBoard(allJSON);
     if(startingPlayer.match(myUsername)) {
         sendHex();
-        setTimeout(readySetNeighbours, 6000);
     }
 
 
