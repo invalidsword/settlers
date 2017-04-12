@@ -563,7 +563,7 @@ function requestTrade(trade){
 }
 
 function SendMaritime(get,give) {
-    stompClient.send("/app/maritimetrade",{},JSON.stringify(trade))
+    stompClient.send("/app/maritimetrade",{},JSON.stringify({"get":get, "give":give, "isValid":false}))
 }
 
 //Roll Dice

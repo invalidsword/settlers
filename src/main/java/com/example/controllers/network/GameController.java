@@ -326,7 +326,7 @@ public class GameController {
             }
     }
 
-    /*
+
     @MessageMapping("/maritimetrade")
     @SendTo("/topic/maritimetrade")
     public ViewMaritimeTrade maritimeTrade(ViewMaritimeTrade pTrade, Principal caller){
@@ -338,7 +338,7 @@ public class GameController {
         pTrade.setValid(isValid);
         return pTrade;
     }
-*/
+
 
     @MessageMapping("/traderequest")
     @SendTo("/topic/traderequest")
