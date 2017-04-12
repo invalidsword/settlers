@@ -105,6 +105,24 @@
                 </td>
             </a>
         </tr>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
+                <td>
+                    <label class="radio w3-hover-text-blue" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                        <input type="radio" name="optradio" id="mKnight" onclick="moveKnight()" >Move Knight</input>
+                    </label>
+                </td>
+            </a>
+        </tr>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
+                <td>
+                    <label class="radio w3-hover-text-red" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                        <input type="radio" name="optradio" id="mRobber" onclick="displaceRobber()" >Move Robber</input>
+                    </label>
+                </td>
+            </a>
+        </tr>
         </tbody>
     </table>
 </div>
@@ -121,38 +139,12 @@
 <!-- Sidebar3 -->
 <div class="w3-sidebar w3-bar-block w3-black w3-animate-left" style="display:none; z-index:10" id="mySidebar3">
     <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-red" id="maritimeTrade" onclick="mTrade()" style="margin-top:45%" data-toggle="modal" data-target="#myModal6">Maritime Trade</a>
-    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-yellow" onclick="pTrade()">Trade with Players</a>
-    <table class="table table-condensed">
-        <tbody>
-        <tr>
-            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
-                <td>
-                    <label class="radio w3-hover-text-red" data-toggle="modal" data-target="#myModal7"  onclick="pTrade()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
-                        <input type="radio" name="optradio" id="tradeP1"></input>
-                    </label>
-                </td>
-            </a>
-        </tr>
-        <tr>
-            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
-                <td>
-                    <label class="radio w3-hover-text-yellow" data-toggle="modal" data-target="#myModal7"  onclick="pTrade()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
-                        <input type="radio" name="optradio" id="tradeP2">  </input>
-                    </label>
-                </td>
-            </a>
-        </tr>
-        <tr>
-            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
-                <td>
-                    <label class="radio w3-hover-text-green" data-toggle="modal" data-target="#myModal7"  onclick="pTrade()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
-                        <input type="radio" name="optradio" id="tradeP3"></input>
-                    </label>
-                </td>
-            </a>
-        </tr>
-        </tbody>
-    </table>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-white" data-toggle="collapse" data-target="#demo2" onclick="pTrade()">Trade with Players</a>
+    <div id="demo2" class="collapse">
+        <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-yellow" id="tradeP1" data-toggle="modal" data-target="#myModal7" onclick="pTrade()"></a>
+        <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-blue" id="tradeP2" data-toggle="modal" data-target="#myModal7" onclick="pTrade()"></a>
+        <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-red" id="tradeP3" data-toggle="modal" data-target="#myModal7" onclick="pTrade()"></a>
+    </div>
 </div>
 <div class="w3-overlay w3-animate-opacity" onclick="w3_close3()" style="cursor:pointer" id="myOverlay3"></div>
 

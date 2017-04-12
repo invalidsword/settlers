@@ -9,17 +9,10 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long gameid;
 
-    @Override
-    public String toString() {
-        return "Player{" +
-                ", aColor='" + aColor + '\'' +
-                ", aUsername='" + aUsername + '\'' +
-                '}';
-    }
-
     private final String aColor;
     private final String aUsername;
     private final int aIndex;
+    private int aMaxCards;
     private int aVPs;
     private int aGold;
     private int aStealableCardAmount;
@@ -66,11 +59,12 @@ public class Player {
         aUsername = pUsername;
         aColor = pColor;
         aIndex = pIndex;
+        aMaxCards = 7;
         aVPs = 0;
         aGold = 0;
-        aStealableCardAmount = 0;
         aRouteLength = 0;
         aArmySize = 0;
+        aStealableCardAmount = 0;
         aProgressCardAmount = 0;
         aPoliticsLevel = 0;
         aTradeLevel = 0;
@@ -102,12 +96,24 @@ public class Player {
         }
     }
 
+    public int getaMaxCards() {
+        return aMaxCards;
+    }
+
+    public void setaMaxCards(int aMaxCards) {
+        this.aMaxCards = aMaxCards;
+    }
+
     public int getaStealableCardAmount() {
         return aStealableCardAmount;
     }
 
     public void setaStealableCardAmount(int aStealableCardAmount) {
         this.aStealableCardAmount = aStealableCardAmount;
+    }
+
+    public void setaMaritimeTradeRates(Map<StealableCard.Resource, Integer> aMaritimeTradeRates) {
+        this.aMaritimeTradeRates = aMaritimeTradeRates;
     }
 
     public void setaResourceCards(Map<StealableCard.Resource, Integer> aResourceCards) {
@@ -240,6 +246,12 @@ public class Player {
 
     public void setaLongestTradeRoute(boolean aLongestTradeRoute) {
         this.aLongestTradeRoute = aLongestTradeRoute;
+        if (aLongestTradeRoute){
+            aVPs += 2;
+        }
+        else{
+            aVPs -= 2;
+        }
     }
 
     public boolean isaAqueduct() {
@@ -388,6 +400,11 @@ public class Player {
         aCommodityCards.put(pCommodity, aCommodityCards.get(pCommodity) - pAmount);
         aStealableCardAmount -= pAmount;
     }
+
+    public boolean canGetProgressCard(){
+        return (aProgressCardAmount < 4);
+    }
+
     //add and remove trade progress cards
     public void addTradeCard(ProgressCard.Trade pTradeCard) {
         if (aTradeCards.containsKey(pTradeCard)) {
@@ -433,13 +450,25 @@ public class Player {
     public void addBuilding(Unit.Building pBuilding) {
         assert (aBuildings.get(pBuilding) < Unit.Building.maxBuildings());
         aBuildings.put(pBuilding, aBuildings.get(pBuilding) + 1);
+        if (pBuilding == Unit.Building.SETTLEMENT){
+            aVPs -= 1;
+        }
+        else if (pBuilding == Unit.Building.CITY){
+            aVPs -= 2;
+        }
     }
-    private boolean canGetBuilding(Unit.Building pBuilding) {
+    public boolean canGetBuilding(Unit.Building pBuilding) {
         return (aBuildings.get(pBuilding) > 0);
     }
     public OwnedBuilding removeBuilding(Unit.Building pBuilding) {
         assert (canGetBuilding(pBuilding));
         aBuildings.put(pBuilding, aBuildings.get(pBuilding) - 1);
+        if (pBuilding == Unit.Building.SETTLEMENT){
+            aVPs += 1;
+        }
+        else if (pBuilding == Unit.Building.CITY){
+            aVPs += 2;
+        }
         return new OwnedBuilding(this, pBuilding);
     }
 
@@ -462,7 +491,7 @@ public class Player {
         assert (aTransports.get(pTransport) < Unit.Transport.maxTransports());
         aTransports.put(pTransport, aTransports.get(pTransport) + 1);
     }
-    private boolean canGetTransport(Unit.Transport pTransport) {
+    public boolean canGetTransport(Unit.Transport pTransport) {
         return (aTransports.get(pTransport) > 0);
     }
     public OwnedTransport removeTransport(Unit.Transport pTransport) {

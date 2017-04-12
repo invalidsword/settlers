@@ -1,12 +1,11 @@
 package com.example.models.gameModels;
+
+import com.example.controllers.network.GameController;
 import com.example.repositories.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class GameManager {
@@ -16,6 +15,8 @@ public class GameManager {
     @Autowired
     private  GameRepository gameRepository;
 
+    @Autowired
+    private GameController gameController;
 
     public  ArrayList<Player> createPlayers(ArrayList<String> pPlayerNames) {
         ArrayList<String> aPlayerColors = new ArrayList<>();
@@ -131,22 +132,72 @@ public class GameManager {
     }
 
 
-    private void checkDice() {
+    public void checkDice() {
         int numberRolled = aGame.getRedDice().add(aGame.getYellowDice());
-        ArrayList<LandHex> tempLandHexes = aGame.getBoard().getLandHexes().get(numberRolled);
-        //System.out.print("tempLandHexex: "+tempLandHexes.size());
-        for (LandHex hex : tempLandHexes) {
-            //System.out.println(hex.getProductionNumber());
-            List<Intersection> tempIntersections = hex.getIntersectionNeighbours();
-            for (Intersection intersection : tempIntersections) {
-                //System.out.println(intersection.getOccupancyFlag());
-                if (intersection.getOccupancyFlag() && intersection.getBuilding() != null) {
-                    //System.out.println("I'm PAYIN OUT!!!!");
-                    Player owner = getPayee(intersection);
-                    boolean isCity = checkIsCity(intersection);
-                    payout(owner, hex.getTerrainType(), isCity);
+        int commodityLevel = aGame.getRedDice().toInt();
+        Game.EventType commodityType = aGame.getEventDice();
+
+        for (Player player : aGame.getPlayers()) {
+            progressCardPayout(player, commodityLevel, commodityType);
+        }
+        if (numberRolled == 7){
+            for (Player player : aGame.getPlayers()) {
+                if (player.getaStealableCardAmount() > player.getaMaxCards()) {
+                    StealableCard.Resource aResource = null;
+                    StealableCard.Commodity aCommodity = null;
+                    boolean hasResource = false;
+                    boolean hasCommodity = false;
+
+                    for (int i = 0; i < player.getaStealableCardAmount() / 2; i++) {
+                        Random random = new Random();
+                        int rng = random.nextBoolean() ? 1 : 2;
+                        switch (rng) {
+                            case 1:
+                                aResource = StealableCard.Resource.values()[(int) Math.random() * StealableCard.Resource.values().length];
+                                if (player.getaResourceCards().get(aResource) > 0) {
+                                    player.removeResource(aResource, 1);
+                                }
+                            case 2:
+                                aCommodity = StealableCard.Commodity.values()[(int) Math.random() * StealableCard.Commodity.values().length];
+                                if (player.getaCommodityCards().get(aCommodity) > 0) {
+                                    player.removeResource(aResource, 1);
+                                }
+                        }
+                    }
                 }
             }
+        }
+        else{
+            ArrayList<LandHex> tempLandHexes = aGame.getBoard().getLandHexes().get(numberRolled);
+            for (LandHex hex : tempLandHexes) {
+                List<Intersection> tempIntersections = hex.getIntersectionNeighbours();
+                for (Intersection intersection : tempIntersections) {
+                    if (intersection.getOccupancyFlag()) {
+                        Player owner = getPayee(intersection);
+                        boolean isCity = checkIsCity(intersection);
+                        payout(owner, hex.getTerrainType(), isCity);
+                    }
+                }
+            }
+        }
+    }
+
+    public void progressCardPayout(Player pOwner, int pLevel, Game.EventType pType){
+        switch (pType){
+            case Barbarian:
+                break;
+            case Politics:
+                if (pOwner.getaPoliticsLevel() >= pLevel && pOwner.canGetProgressCard()){
+                    pOwner.addPoliticsCard(ProgressCard.Politics.getRandomPoliticsCard());
+                }
+            case Trade:
+                if (pOwner.getaTradeLevel() >= pLevel && pOwner.canGetProgressCard()){
+                    pOwner.addTradeCard(ProgressCard.Trade.getRandomTradeCard());
+                }
+            case Science:
+                if (pOwner.getaScienceLevel() >= pLevel && pOwner.canGetProgressCard()) {
+                    pOwner.addScienceCard(ProgressCard.Science.getRandomScienceCard());
+                }
         }
     }
 

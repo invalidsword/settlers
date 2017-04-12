@@ -17,7 +17,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Random;
 
 @Controller
 public class GameController {
@@ -347,28 +346,26 @@ public class GameController {
 /* Robber */
 
 
-    @SendTo("/topic/robber")
-    public boolean moveRobber(){
-        return true;
-    }
-
     @MessageMapping("/placerobber")
     @SendTo("/topic/placerobber")
-    public ViewRobber placeRobber(ViewRobber pRobber){
+    public ViewRobber placeRobber(ViewRobber pRobber, Principal caller){
+        System.out.println("Robber being placed");
+        Player self = gameManager.getPlayerFromString(caller.getName());
         Hex hex = gameManager.getGame().getBoard().getHexes().get(pRobber.getHexId());
         boolean isValid = (hex.getTerrainType() != TerrainType.Sea);
         boolean hasStealable = false;
         for (Intersection neighbour : hex.getIntersectionNeighbours()){
             if (neighbour.getBuilding() != null){
                 Player owner = neighbour.getBuilding().getOwner();
-                if (owner.getaStealableCardAmount() > 0) {
+                if (owner != self || owner.getaStealableCardAmount() > 0) {
                     hasStealable = true;
                     break;
                 }
             }
         }
-        System.out.println("Robber is on hex: " + hex.toString());
-        pRobber.setValid(isValid);
+        System.out.println("Robber is on hex: " + hex.getId());
+        pRobber.setIsValid(isValid);
+        System.out.println("Valid : "+isValid);
         pRobber.setHasStealable(hasStealable);
         return pRobber;
     }
@@ -376,58 +373,21 @@ public class GameController {
     @MessageMapping("/stealresource")
     @SendTo("/topic/stealresource")
     public ViewSteal stealResource(ViewSteal pSteal, Principal caller){
+        System.out.println("stealing");
         Intersection intersection = gameManager.getGame().getBoard().getIntersections().get(pSteal.getIntersectionID());
         Player stealer = gameManager.getPlayerFromString(caller.getName());
-        boolean isValid = intersection.getBuilding().getOwner() != null && intersection.getBuilding().getOwner().getaStealableCardAmount() > 0;
-        if (isValid){
+        boolean isValid = intersection.getBuilding() != null && intersection.getBuilding().getOwner() != stealer && intersection.getBuilding().getOwner().getaStealableCardAmount() > 0;
+        System.out.println("Valid :"+ isValid);
+        if (isValid) {
             Player victim = intersection.getBuilding().getOwner();
-            StealableCard.Resource aResource = null;
-            StealableCard.Commodity aCommodity = null;
-            boolean hasResource = false;
-            boolean hasCommodity = false;
-            for (StealableCard.Resource resource : victim.getaResourceCards().keySet()){
-                if (victim.getaResourceCards().get(resource) > 0){
-                    hasResource = true;
-                    break;
+            for (StealableCard.Resource card : StealableCard.Resource.values()){
+                if (victim.getaResourceCards().get(card) > 0){
+                    victim.removeResource(card, 1);
+                    stealer.addResource(card, 1);
                 }
-            }
-            for (StealableCard.Commodity commodity : victim.getaCommodityCards().keySet()){
-                if (victim.getaCommodityCards().get(commodity) > 0){
-                    hasCommodity = true;
-                    break;
-                }
-            }
-
-            do{
-                Random random = new Random();
-                int rng = random.nextBoolean() ? 1 : 2;
-                switch(rng) {
-                    case 1:
-                        if (hasResource) {
-                            aResource = StealableCard.Resource.values()[(int) Math.random() * StealableCard.Resource.values().length];
-                            if (victim.getaResourceCards().get(aResource) > 0) {
-                                break;
-                            }
-                        }
-                    case 2:
-                        if (hasCommodity) {
-                            aCommodity = StealableCard.Commodity.values()[(int) Math.random() * StealableCard.Commodity.values().length];
-                            if (victim.getaCommodityCards().get(aCommodity) > 0){
-                                break;
-                            }
-                        }
-                }
-            }while(aResource == null || aCommodity == null);
-            if (aResource != null){
-                victim.removeResource(aResource,1);
-                stealer.addResource(aResource, 1);
-            }
-            else if (aCommodity != null){
-                victim.removeCommodity(aCommodity,1);
-                stealer.addCommodity(aCommodity, 1);
             }
         }
-        pSteal.setValid(isValid);
+        pSteal.setIsValid(isValid);
         return pSteal;
     }
 

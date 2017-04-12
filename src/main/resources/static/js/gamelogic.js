@@ -115,6 +115,7 @@ var oreClick = 0;
 var sheepClick = 0;
 var wheatClick = 0;
 
+var seven;
 //Knight state (active/inactive)
 var knight;
 
@@ -123,6 +124,8 @@ var knight;
 //var color = 'black';
 //var myUsername = [[${username}]];
 var stompClient = null;
+
+// Robber
 
 var enableSteal = false;
 var enableMoveRobber = false;
@@ -136,6 +139,7 @@ var isSetup1 = false;
 var isSetup2 = false;
 var gotSetupResources = false;
 
+var holder = d3.select("svg");
 
 var enableBuyAndUpgrade = false;
 //var boardEnabled = false;
@@ -305,10 +309,13 @@ function connect() {
             status.innerHTML = "You rolled " + diceTotal + ".";
             console.log("You rolled " + diceTotal + ".");
             if(diceTotal == 7){
+                disableMyButtons();
                 status.innerHTML += " Robber!";
+                console.log("Place robber");
+                enableMoveRobber = true;
             }
-
-            if(currUser.match(myUsername)){
+            else if(currUser.match(myUsername)){
+                console.log("getResources")
                 getResources();
             }
 
@@ -469,7 +476,7 @@ function connect() {
             var toColor = piece.color;
             var valid = piece.isValid;
             if(valid) {
-                d3.select("#"+myId).attr("fill", "grey").attr("r",12); // TODO
+                drawKnight(myId,toColor,1);
                 getResources();
             }
 
@@ -482,7 +489,8 @@ function connect() {
             var toColor = piece.color;
             var valid = piece.isValid;
             if(valid) {
-                d3.select("#"+myId).attr("fill", toColor).attr("r",25); // TODO
+                var str = d3.select("k"+myId).attr("strength");
+                drawKnight(myId,toColor,str++);
                 getResources();
             }
 
@@ -495,7 +503,7 @@ function connect() {
             var toColor = piece.color;
             var valid = piece.isValid;
             if(valid) {
-                d3.select("#"+myId).attr("fill", "black").attr("r",25); // TODO
+                d3.select("#"+myId).attr("fill", "white");
                 getResources();
             }
 
@@ -533,32 +541,39 @@ function connect() {
             }
         });
 
-        stompClient.subscribe('/topic/robber', function(bool) {
-            if (currUser.match(myUsername)) {
+
+        stompClient.subscribe('/topic/placerobber', function(robber) {
+            robber = JSON.parse((robber.body));
+
+            if(robber.isValid){
+                console.log("isValid = true")
+                drawRobber(robber.hexId);
+                enableMoveRobber = false;
+                if (currUser.match(myUsername)) {
+                    if (robber.hasStealable){
+                        enableSteal = true;
+                    }
+                    else if(currUser.match(myUsername)) {
+                        getResources();
+                        enableMyButtons();
+                        document.getElementById('rolldice').disabled = true;
+                    }
+                }
+            }
+            else{
                 enableMoveRobber = true;
             }
         });
 
-        stompClient.subscribe('/topic/placerobber', function(robber) {
-            robber = JSON.parse((robber.body));
-            if (currUser.match(myUsername)) {
-                if(robber.isValid){
-                    enableMoveRobber = false;
-                    if (robber.hasStealable){
-                        enableSteal = true;
-                    }
-                }else{
-                    enableMoveRobber = true;
-                }
-            }
-        });
-
         stompClient.subscribe('/topic/stealresource', function(steal){
+            console.log("just stole");
             steal = JSON.parse((steal.body));
             if (currUser.match(myUsername)){
                 if (steal.isValid){
                     enableMyButtons();
+                    document.getElementById('rolldice').disabled = true;
                     enableSteal = false;
+                    getResources();
                 }else{
                     disableMyButtons();
                     enableSteal = true;
@@ -618,6 +633,7 @@ function rollDice() {
     d3 = Math.floor(Math.random() * 6) + 1;
 
     stompClient.send("/app/rolldice",{},JSON.stringify({"red":d1, "yellow":d2, "event":d3}));
+
 
     //boardEnabled = true;
     enableMyButtons();
@@ -739,8 +755,36 @@ function enableMyButtons(){
     document.getElementById('mShip').disabled = false;
     document.getElementById('maritimeTrade').disabled = false;
 
-
 }
+
+function drawKnight(chosenIntersectionID, colour, knightStrength)
+{
+    var intersectionObject = document.getElementById(chosenIntersectionID);
+    var arc = d3.arc()
+        .innerRadius(8)
+        .outerRadius(12)
+        .startAngle(0) //converting from degs to radians
+        .endAngle(2*Math.PI) //just radians
+    holder.append("path")
+        .attr("d", arc)
+        .attr("transform", "translate(" + intersectionObject.__data__.x + "," + intersectionObject.__data__.y +")")
+        .attr("fill", colour)
+        .attr("class", "knight")
+        .attr("strength", knightStrength)
+        .attr("x_posit", intersectionObject.__data__.x)
+        .attr("y_posit", intersectionObject.__data__.y)
+        .attr("id", "k"+chosenIntersectionID);
+    holder.append("g")
+        .attr("transform", "translate(" + (intersectionObject.__data__.x + 2) + "," + (intersectionObject.__data__.y - 2) + ")")
+        .append("text")
+        .text( "+" + knightStrength)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#00ffff")
+        .attr("id", "k"+chosenIntersectionID+"strength");
+}
+
 
 //Activated to show attributes when player button is clicked
 function setAttributes() {
@@ -957,6 +1001,20 @@ function getKnight3() {
         //Set no resource message to true
     }
 }
+
+ function moveKnight() {
+
+
+ }
+
+ function displaceRobber(){
+
+    disableMyButtons();
+    enableMoveRobber = true;
+ }
+
+
+
 /*
 //Activate Knight
 function activateKnight() {
@@ -967,6 +1025,43 @@ function activateKnight() {
 
 /* Robber */
 
+var RobberPos = false;
+
+function drawRobber(id) {
+    var hex = document.getElementById(id);
+    if(RobberPos)
+    {
+        console.log("hi");
+        d3.select("robber")      .attr("transform", "translate(" + (hex.__data__.x) + "," + (hex.__data__.y) + ")")
+    }
+    else {
+        RobberPos = true;
+        console.log(RobberPos);
+
+        var symbolGenerator = d3.symbol()
+            .type(d3.symbolWye)
+            .size(350);
+
+        var pathData = symbolGenerator();
+
+        var hex = document.getElementById(id);
+        console.log(JSON.stringify(hex));
+
+        holder.append("path")
+            .attr("d", pathData)
+            .attr("fill", "#ff704d")
+            .attr("transform", "translate(" + (hex.__data__.x) + "," + (hex.__data__.y) + ")")
+            .attr("class", "robber")
+            .attr("id", "robber");
+
+
+        var f = $("#theRobber").attr("d");
+        console.log(f);
+        enableMoveRobber = false;
+        console.log("moved robber");
+    }
+}
+
 
 function moveRobber(id){
     console.log("send robber");
@@ -976,6 +1071,9 @@ function moveRobber(id){
 function stealResource(id){
     stompClient.send("/app/stealresource", {}, JSON.stringify({"intersectionID":id, "isValid":false}))
 }
+
+
+
 
 
 
@@ -1187,13 +1285,14 @@ function mTradeSend() {
 
 function mTrade(){
    // reset = document.getElementById('mtNum').value = '';
-    document.getElementById('tradeP1').text = p1name;
-    document.getElementById('tradeP2').text = "lolcat";
-    document.getElementById('tradeP3').text = p3name;
+
 }
 
 
 function pTrade(){
+    document.getElementById('tradeP1').innerHTML = p1name;
+    document.getElementById('tradeP2').innerHTML = p2name;
+    document.getElementById('tradeP3').innerHTML = p3name;
     reset = document.getElementById('ptGiveBrick').value = '';
     reset = document.getElementById('ptGiveWood').value = '';
     reset = document.getElementById('ptGiveOre').value = '';
@@ -1368,12 +1467,12 @@ var jsonPolygons = [{"x":340.19237886466846,"y":620,"stroke":"black","stroke_wid
 
 // just a js object that holds the data to append circles for displaying production numbers
 var jsonNumCircles =
-    [{"x_coord":236.26933041053582,"y_coord":440,"x_axial":-4,"y_axial":3,"radius":14,"number":3},{"x_coord":184.3078061834695,"y_coord":350,"x_axial":-4,"y_axial":4,"radius":14,"number":10},{"x_coord":236.26933041053582,"y_coord":260,"x_axial":-3,"y_axial":4,"radius":14,"number":5},{"x_coord":496.07695154586736,"y_coord":530,"x_axial":-2,"y_axial":0,"radius":14,"number":4},{"x_coord":444.11542731880104,"y_coord":440,"x_axial":-2,"y_axial":1,"radius":14,"number":8},{"x_coord":392.1539030917347,"y_coord":350,"x_axial":-2,"y_axial":2,"radius":14,"number":10}
-        ,{"x_coord":600,"y_coord":530,"x_axial":-1,"y_axial":-1,"radius":14,"number":6},{"x_coord":548.0384757729337,"y_coord":440,"x_axial":-1,"y_axial":0,"radius":14,"number":2},{"x_coord":496.07695154586736,"y_coord":350,"x_axial":-1,"y_axial":1,"radius":14,"number":5},{"x_coord":444.11542731880104,"y_coord":260,"x_axial":-1,"y_axial":2,"radius":14,"number":9},{"x_coord":703.9230484541326,"y_coord":530,"x_axial":0,"y_axial":-2,"radius":14,"number":12}
-        ,{"x_coord":651.9615242270663,"y_coord":440,"x_axial":0,"y_axial":-1,"radius":14,"number":11}
-        ,{"x_coord":600,"y_coord":350,"x_axial":0,"y_axial":0,"radius":14,"number":9},{"x_coord":548.0384757729337,"y_coord":260,"x_axial":0,"y_axial":1,"radius":14,"number":2},{"x_coord":496.07695154586736,"y_coord":170,"x_axial":0,"y_axial":2,"radius":14,"number":8},{"x_coord":755.884572681199,"y_coord":440,"x_axial":1,"y_axial":-2,"radius":14,"number":3},{"x_coord":703.9230484541326,"y_coord":350,"x_axial":1,"y_axial":-1,"radius":14,"number":2},{"x_coord":600,"y_coord":170,"x_axial":1,"y_axial":1,"radius":14,"number":4},{"x_coord":807.8460969082653,"y_coord":350,"x_axial":2,"y_axial":-2,"radius":14,"number":10}
-        ,{"x_coord":755.884572681199,"y_coord":260,"x_axial":2,"y_axial":-1,"radius":14,"number":3},{"x_coord":703.9230484541326,"y_coord":170,"x_axial":2,"y_axial":0,"radius":14,"number":6},{"x_coord":963.7306695894642,"y_coord":440,"x_axial":3,"y_axial":-4,"radius":14,"number":11}
-        ,{"x_coord":1015.6921938165306,"y_coord":350,"x_axial":4,"y_axial":-4,"radius":14,"number":2},{"x_coord":963.7306695894642,"y_coord":260,"x_axial":4,"y_axial":-3,"radius":14,"number":12}];
+    [{"x":236.26933041053582,"y":440,"x_axial":-4,"y_axial":3,"radius":14,"number":3},{"x":184.3078061834695,"y":350,"x_axial":-4,"y_axial":4,"radius":14,"number":10},{"x":236.26933041053582,"y":260,"x_axial":-3,"y_axial":4,"radius":14,"number":5},{"x":496.07695154586736,"y":530,"x_axial":-2,"y_axial":0,"radius":14,"number":4},{"x":444.11542731880104,"y":440,"x_axial":-2,"y_axial":1,"radius":14,"number":8},{"x":392.1539030917347,"y":350,"x_axial":-2,"y_axial":2,"radius":14,"number":10}
+        ,{"x":600,"y":530,"x_axial":-1,"y_axial":-1,"radius":14,"number":6},{"x":548.0384757729337,"y":440,"x_axial":-1,"y_axial":0,"radius":14,"number":2},{"x":496.07695154586736,"y":350,"x_axial":-1,"y_axial":1,"radius":14,"number":5},{"x":444.11542731880104,"y":260,"x_axial":-1,"y_axial":2,"radius":14,"number":9},{"x":703.9230484541326,"y":530,"x_axial":0,"y_axial":-2,"radius":14,"number":12}
+        ,{"x":651.9615242270663,"y":440,"x_axial":0,"y_axial":-1,"radius":14,"number":11}
+        ,{"x":600,"y":350,"x_axial":0,"y_axial":0,"radius":14,"number":9},{"x":548.0384757729337,"y":260,"x_axial":0,"y_axial":1,"radius":14,"number":2},{"x":496.07695154586736,"y":170,"x_axial":0,"y_axial":2,"radius":14,"number":8},{"x":755.884572681199,"y":440,"x_axial":1,"y_axial":-2,"radius":14,"number":3},{"x":703.9230484541326,"y":350,"x_axial":1,"y_axial":-1,"radius":14,"number":2},{"x":600,"y":170,"x_axial":1,"y_axial":1,"radius":14,"number":4},{"x":807.8460969082653,"y":350,"x_axial":2,"y_axial":-2,"radius":14,"number":10}
+        ,{"x":755.884572681199,"y":260,"x_axial":2,"y_axial":-1,"radius":14,"number":3},{"x":703.9230484541326,"y":170,"x_axial":2,"y_axial":0,"radius":14,"number":6},{"x":963.7306695894642,"y":440,"x_axial":3,"y_axial":-4,"radius":14,"number":11}
+        ,{"x":1015.6921938165306,"y":350,"x_axial":4,"y_axial":-4,"radius":14,"number":2},{"x":963.7306695894642,"y":260,"x_axial":4,"y_axial":-3,"radius":14,"number":12}];
 
 setTimeout(init,1500);
 
@@ -1402,7 +1501,7 @@ function init() {
             {
                 // generate hex production numbers
                 //var getNumCircleCoords = new HexBlueprint(q,r,b,hxradius,"");
-                //jsonNumCircles.push({x_coord: getNumCircleCoords.centre.x, y_coord: getNumCircleCoords.centre.y, x_axial: q, y_axial: r,
+                //jsonNumCircles.push({x: getNumCircleCoords.centre.x, y: getNumCircleCoords.centre.y, x_axial: q, y_axial: r,
                 //radius: numCircleRadius, diceNum: 11});
 
 
@@ -1423,7 +1522,7 @@ function init() {
                 var edge = new EdgeBlueprint(x, y, x+y, hxradius, "", 4, edgeHeight, edgeWidth);
 
                 //var edge = new SideEdgeBlueprint(x, y, x+y, EdgeHeight,'top');
-                var edgeValues = {"x_coord": edge.edgepoint.i, "y_coord": edge.edgepoint.l,
+                var edgeValues = {"x": edge.edgepoint.i, "y": edge.edgepoint.l,
                     "stroke":"black", "stroke_width": "3", "fill" : "black", "rotate_amount": "330", "id": "e1_"+x+"_"+y};
 
 
@@ -1443,7 +1542,7 @@ function init() {
 
                 // left side
                 edge = new EdgeBlueprint(x, y, x + y, hxradius, "", 3, edgeHeight, edgeWidth);
-                edgeValues = {"x_coord": edge.edgepoint.i, "y_coord": edge.edgepoint.l,
+                edgeValues = {"x": edge.edgepoint.i, "y": edge.edgepoint.l,
                     "stroke":"black", "stroke_width": "3", "fill" : "black", "rotate_amount": "270", "id": "e2_"+x+"_"+y};
 
                 var tempEdge;
@@ -1463,7 +1562,7 @@ function init() {
 
                 // bottom left
                 edge = new EdgeBlueprint(x, y, x+y, hxradius, "", 2, edgeHeight, edgeWidth);
-                edgeValues = {"x_coord": edge.edgepoint.i, "y_coord": edge.edgepoint.l,
+                edgeValues = {"x": edge.edgepoint.i, "y": edge.edgepoint.l,
                     "stroke":"black", "stroke_width": "3", "fill" : "black", "rotate_amount": "210", "id": "e3_"+x+"_"+y};
 
 
@@ -1486,7 +1585,7 @@ function init() {
 
                 // top right
                 edge = new EdgeBlueprint(x, ny, x+ny, hxradius, "", 2, edgeHeight, edgeWidth);
-                edgeValues = {"x_coord": edge.edgepoint.i, "y_coord": edge.edgepoint.l,
+                edgeValues = {"x": edge.edgepoint.i, "y": edge.edgepoint.l,
                     "stroke":"black", "stroke_width": "3", "fill" : "black", "rotate_amount": "210", "id": "e3_"+x+"_"+ny};
 
                 var tempEdge;
@@ -1507,7 +1606,7 @@ function init() {
 
                 // right side
                 edge = new EdgeBlueprint(mx, ny, mx+ny, hxradius, "", 3, edgeHeight, edgeWidth);
-                edgeValues = {"x_coord": edge.edgepoint.i, "y_coord": edge.edgepoint.l,
+                edgeValues = {"x": edge.edgepoint.i, "y": edge.edgepoint.l,
                     "stroke":"black", "stroke_width": "3", "fill" : "black", "rotate_amount": "270", "id": "e2_"+mx+"_"+ny};
 
                 var tempEdge;
@@ -1528,7 +1627,7 @@ function init() {
 
                 // bottom right
                 edge = new EdgeBlueprint(mx, y, mx+y, hxradius, "", 4, edgeHeight, edgeWidth);
-                edgeValues = {"x_coord": edge.edgepoint.i, "y_coord": edge.edgepoint.l,
+                edgeValues = {"x": edge.edgepoint.i, "y": edge.edgepoint.l,
                     "stroke":"black", "stroke_width": "3", "fill" : "black", "rotate_amount": "330", "id": "e1_"+mx+"_"+y};
 
 
@@ -1555,7 +1654,7 @@ function init() {
                 var IntersectionNeighbours = [];
 
                 var Intersection = new IntersectionBlueprint(x, y, x+y, 3, hxradius);
-                circleValues = {"x_axis": Intersection.centre.x, "y_axis": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i3_"+x+"_"+y};
+                circleValues = {"x": Intersection.centre.x, "y": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i3_"+x+"_"+y};
                 var tempIntersection;
                 var search = true;
 
@@ -1576,7 +1675,7 @@ function init() {
                 }
 
                 var Intersection = new IntersectionBlueprint(x, y, x+y, 4,hxradius);
-                circleValues = {"x_axis": Intersection.centre.x, "y_axis": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i4_"+ x+"_"+y};
+                circleValues = {"x": Intersection.centre.x, "y": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i4_"+ x+"_"+y};
                 var tempIntersection;
                 var search = true;
 
@@ -1597,7 +1696,7 @@ function init() {
                 }
 
                 var Intersection = new IntersectionBlueprint(x, my, x+my, 4,hxradius);
-                circleValues = {"x_axis": Intersection.centre.x, "y_axis": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i4_"+x+"_"+my};
+                circleValues = {"x": Intersection.centre.x, "y": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i4_"+x+"_"+my};
                 var tempIntersection;
                 var search = true;
 
@@ -1620,7 +1719,7 @@ function init() {
 
 
                 var Intersection = new IntersectionBlueprint(mx, ny, mx+ny, 3,hxradius);
-                circleValues = {"x_axis": Intersection.centre.x, "y_axis": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i3_"+mx+"_"+ny};
+                circleValues = {"x": Intersection.centre.x, "y": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i3_"+mx+"_"+ny};
                 var tempIntersection;
                 var search = true;
 
@@ -1641,7 +1740,7 @@ function init() {
 
 
                 var Intersection = new IntersectionBlueprint(mx, y, mx+y, 3,hxradius);
-                circleValues = {"x_axis": Intersection.centre.x, "y_axis": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i3_"+mx+"_"+y};
+                circleValues = {"x": Intersection.centre.x, "y": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i3_"+mx+"_"+y};
                 var tempIntersection;
                 var search = true;
 
@@ -1664,7 +1763,7 @@ function init() {
 
 
                 var Intersection = new IntersectionBlueprint(mx, y, mx+y, 4,hxradius);
-                circleValues = {"x_axis": Intersection.centre.x, "y_axis": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i4_"+mx+"_"+y};
+                circleValues = {"x": Intersection.centre.x, "y": Intersection.centre.y,"radius" : 8, "color": "black", "id": "i4_"+mx+"_"+y};
                 var tempIntersection;
                 var search = true;
 
@@ -1697,14 +1796,18 @@ function init() {
 
     var color ='blue';
 
-    var holder = d3.select("svg");
+    // H_0_-1
 
     // append the board hexagons to the DOM
     var boardHexes = holder.selectAll("hexes")
         .data(jsonPolygons)
         .enter()
         .append("polygon");
+////
 
+
+
+    /////
     var hexeAttrs = boardHexes
         .attr("class", "hex")
         .attr("points", function (d) { return d.points; })
@@ -1714,9 +1817,10 @@ function init() {
         .attr("stroke-width", function (d) { return d.stroke_width; })
         .on("click", function (d) {
 
-            if(currUser.match(myUsername)){  // what is this
+            if(currUser.match(myUsername)){
                 console.log("on click hex");
                 if(enableMoveRobber){
+
                     moveRobber(d.id);
                 }
 
@@ -1740,8 +1844,8 @@ function init() {
 
     var intersectionAttrs = boardIntersections
         .attr("class", "intersection")
-        .attr("cx", function (d) { return d.x_axis; })
-        .attr("cy", function (d) { return d.y_axis; })
+        .attr("cx", function (d) { return d.x; })
+        .attr("cy", function (d) { return d.y; })
         .attr("r", function (d) { return d.radius; })
         .attr("id",function (d) { return d.id; })
         .attr("fill","black")
@@ -1753,7 +1857,12 @@ function init() {
             if(currUser.match(myUsername)){
                 //if(boardEnabled){
 
-                if(!settlementPlaced && isSetup1){
+                if(enableSteal){
+                    console.log("stealing");
+                    stealResource(d.id);
+                }
+
+                else if(!settlementPlaced && isSetup1){
                         placeSettlement(d.id);
 
 
@@ -1782,12 +1891,9 @@ function init() {
                 }
             }
 
-
-
-            //}
-
-
         });
+
+
 
     // append the board edges to the DOM
     var edges = holder.selectAll("edges")
@@ -1800,13 +1906,13 @@ function init() {
         .attr("id", function(d) { return d.id; })
         .attr("stroke-width", function (d) { return 0; })
         .attr("fill", function (d) {return d.fill;})
-        .attr("x", function(d) {return d.x_coord;})
-        .attr("y", function(d) {return d.y_coord;})
+        .attr("x", function(d) {return d.x;})
+        .attr("y", function(d) {return d.y;})
         .attr("width", edgeHeight)
         .attr("height", edgeWidth)
         .attr("transform", function(d){var x_translate = -edgeHeight/2;
             var y_translate = -edgeWidth/2;
-            return "rotate(" + d.rotate_amount +","+d.x_coord+ "," + d.y_coord + ")"+ " translate(" + x_translate + "," + y_translate +")";})
+            return "rotate(" + d.rotate_amount +","+d.x+ "," + d.y + ")"+ " translate(" + x_translate + "," + y_translate +")";})
         .on("click", function (d) {
 
                 if(currUser.match(myUsername)){  // what is this
@@ -1844,8 +1950,8 @@ function init() {
 
     var prodCircAttrs = hexProdCircs
         .attr("class", "prodCirc")
-        .attr("cx", function (d) { return d.x_coord; })
-        .attr("cy", function (d) { return d.y_coord; })
+        .attr("cx", function (d) { return d.x; })
+        .attr("cy", function (d) { return d.y; })
         .attr("r", function (d) { return d.radius; })
         .attr("fill","white")
         .attr("stroke","white")
@@ -1857,8 +1963,8 @@ function init() {
         .append("text");
 
     var textLabels = text
-        .attr("x", function(d) { return d.x_coord; })
-        .attr("y", function(d) { return d.y_coord + 6; })
+        .attr("x", function(d) { return d.x; })
+        .attr("y", function(d) { return d.y + 6; })
         .text( function (d) { return d.number; })
         .attr("font-family", "sans-serif")
         .attr("font-size", "16px")
