@@ -562,6 +562,10 @@ function requestTrade(trade){
     stompClient.send("/app/trade",{},JSON.stringify(trade))
 }
 
+function SendMaritime(get,give) {
+    stompClient.send("/app/maritimetrade",{},JSON.stringify(trade))
+}
+
 //Roll Dice
 function rollDice() {
     var status = document.getElementById("status");
@@ -589,109 +593,77 @@ function endTurn() {
 }
 
 //Radio click on/off
+
 var clickBuyRoad = false;
 var clickBuySettlement = false;
 var clickUpgradeCity = false;
 var clickActivateKnight = false;
 var clickBuyKnight = false;
-var clickUpdateStrong = false;
-var clickUpdateMighty = false;
+var clickUpgradeKnight = false;
 var clickMoveShip = false;
 
 function buyRoad(){
     clickBuyRoad = true;
-
     clickBuySettlement = false;
     clickUpgradeCity = false;
     clickActivateKnight = false;
     clickBuyKnight = false;
-    clickUpdateStrong = false;
-    clickUpdateMighty = false;
+    clickUpgradeKnight = false;
     clickMoveShip = false;
 }
-
 function buySettlement(){
     clickBuySettlement = true;
-
     clickBuyRoad = false;
     clickUpgradeCity = false;
     clickActivateKnight = false;
     clickBuyKnight = false;
-    clickUpdateStrong = false;
-    clickUpdateMighty = false;
+    clickUpgradeKnight = false;
     clickMoveShip = false;
 }
-
 function upgradeCity(){
     clickUpgradeCity = true;
-
     clickBuyRoad = false;
     clickBuySettlement = false;
     clickActivateKnight = false;
     clickBuyKnight = false;
-    clickUpdateStrong = false;
-    clickUpdateMighty = false;
+    clickUpgradeKnight = false;
     clickMoveShip = false;
 }
-
 function activateKnight(){
     clickActivateKnight = true;
-    console.log("Clicked log, should be true");
     clickBuyRoad = false;
     clickBuySettlement = false;
     clickUpgradeCity = false;
     clickBuyKnight = false;
-    clickUpdateStrong = false;
-    clickUpdateMighty = false;
+    clickUpgradeKnight = false;
     clickMoveShip = false;
 }
-
 function buyKnight(){
     clickBuyKnight = true;
-
     clickBuyRoad = false;
     clickBuySettlement = false;
     clickUpgradeCity = false;
     clickActivateKnight = false;
-    clickUpdateStrong = false;
-    clickUpdateMighty = false;
+    clickUpgradeKnight = false;
     clickMoveShip = false;
 }
-
-function updateStrong(){
-    clickUpdateStrong = true;
-
-    clickBuyRoad = false;
-    clickBuySettlement = false;
-    clickUpgradeCity = false;
-    clickActivateKnight = false;
-    clickBuyKnight = false;
-    clickUpdateMighty = false;
-    clickMoveShip = false;
-}
-
-function updateMighty(){
-    clickUpdateMighty = true;
-
+function upgradeAKnight(){
+    clickUpgradeKnight = true;
     clickBuyRoad = false;
     clickBuySettlement = false;
     clickUpgradeCity = false;
     clickActivateKnight = false;
     clickBuyKnight = false;
-    clickUpdateStrong = false;
     clickMoveShip = false;
 }
-
 function moveShip (){
     clickMoveShip = true;
-
     clickBuyRoad = false;
     clickBuySettlement = false;
     clickUpgradeCity = false;
     clickActivateKnight = false;
     clickBuyKnight = false;
-    clickUpdateMighty = false;
-    clickUpdateStrong = false;
+    clickUpgradeKnight = false;
 }
 
 
@@ -705,8 +677,7 @@ function disableMyButtons(){
     document.getElementById('uCity').disabled = true;
     document.getElementById('aKnight').disabled = true;
     document.getElementById('bKnight').disabled = true;
-    document.getElementById('uKnightStrong').disabled = true;
-    document.getElementById('uKnightMighty').disabled = true;
+    document.getElementById('uKnight').disabled = true;
     document.getElementById('mShip').disabled = true;
 
 }
@@ -721,8 +692,7 @@ function enableMyButtons(){
     document.getElementById('uCity').disabled = false;
     document.getElementById('aKnight').disabled = false;
     document.getElementById('bKnight').disabled = false;
-    document.getElementById('uKnightStrong').disabled = false;
-    document.getElementById('uKnightMighty').disabled = false;
+    document.getElementById('uKnight').disabled = false;
     document.getElementById('mShip').disabled = false;
 
 }
@@ -785,20 +755,6 @@ function setAttributes() {
     cloth.innerHTML = nCloth;
     book.innerHTML = nBook;
     commodityCard.innerHTML = "Commodity Cards: " + nCommodityCard;
-
-    //Maritime Trade
-    gBrick = document.getElementById("tradeBrick");
-    gWood = document.getElementById("tradeWood");
-    gOre = document.getElementById("tradeOre");
-    gSheep = document.getElementById("tradeSheep");
-    gWheat = document.getElementById("tradeWheat");
-    maritimeTrade = document.getElementById("maritimeTrade");
-    gBrick.innerHTML = "Give/Get";
-    gWood.innerHTML = "Give/Get";
-    gOre.innerHTML = "Give/Get";
-    gSheep.innerHTML = "Give/Get";
-    gWheat.innerHTML = "Give/Get";
-    maritimeTrade.innerHTML = "Maritime Trade";
 
     /*Place road, ship, settlement, city
      pRoad.innerHTML = "Place Roads " + nRoad;
@@ -964,390 +920,273 @@ function activateKnight() {
     }
 }*/
 
-//----------------------Maritime Trade------------------------
-function setPreResult() {
-    var tResult = document.getElementById("tResult");
-    tResult.innerHTML = "";
+/*  */
+
+function startTimer()
+{
+    var x = document.getElementById("noResource");
+    x.className = "show";
+    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 7000);
+}
+function w3_open1() {
+    document.getElementById("mySidebar1").style.display = "block";
+    document.getElementById("myOverlay1").style.display = "block";
+}
+function w3_close1() {
+    document.getElementById("mySidebar1").style.display = "none";
+    document.getElementById("myOverlay1").style.display = "none";
+}
+function w3_open2() {
+    document.getElementById("mySidebar2").style.display = "block";
+    document.getElementById("myOverlay2").style.display = "block";
+}
+function w3_close2() {
+    document.getElementById("mySidebar2").style.display = "none";
+    document.getElementById("myOverlay2").style.display = "none";
+}
+function w3_open3() {
+    document.getElementById("mySidebar3").style.display = "block";
+    document.getElementById("myOverlay3").style.display = "block";
+}
+function w3_close3() {
+    document.getElementById("mySidebar3").style.display = "none";
+    document.getElementById("myOverlay3").style.display = "none";
+}
+function w3_open4() {
+    document.getElementById("mySidebar4").style.display = "block";
+    document.getElementById("myOverlay4").style.display = "block";
+}
+function w3_close4() {
+    document.getElementById("mySidebar4").style.display = "none";
+    document.getElementById("myOverlay4").style.display = "none";
+}
+function w3_open5() {
+    document.getElementById("mySidebar5").style.display = "block";
+    document.getElementById("myOverlay5").style.display = "block";
+}
+function w3_close5() {
+    document.getElementById("mySidebar5").style.display = "none";
+    document.getElementById("myOverlay5").style.display = "none";
+}
+// Trade
+var reset;
+
+var mgetBrick = false;
+var mgetWood = false;
+var mgetOre = false;
+var mgetSheep = false;
+var mgetWheat = false;
+
+var mgiveWood = false;
+var mgiveOre = false;
+var mgiveBrick = false;
+var mgiveSheep = false;
+var mgiveWheat = false;
+
+function resetMres() {
+     mgetBrick = false;
+     mgetWood = false;
+     mgetOre = false;
+     mgetSheep = false;
+     mgetWheat = false;
+
+     mgiveWood = false;
+     mgiveOre = false;
+     mgiveBrick = false;
+     mgiveSheep = false;
+     mgiveWheat = false;
 }
 
-//Give resource
-function giveBrick() {
-    var tResult = document.getElementById("tResult");
-    tResult.innerHTML = "";
+function setMgetBrick() {
+     mgetBrick = true;
 
-    gBrick = document.getElementById("tradeBrick");
-    gBrick.innerHTML = "Give 4";
-    brickClick++;
-
-    //Can Only give 1 resource type
-    if(woodClick == 1){
-        gWood.innerHTML = "Give/Get";
-        woodClick = 0;
-    }
-    else if(oreClick == 1){
-        gOre.innerHTML = "Give/Get";
-        oreClick = 0;
-    }
-    else if(sheepClick == 1){
-        gSheep.innerHTML = "Give/Get";
-        sheepClick = 0;
-    }
-    else if(wheatClick == 1){
-        gWheat.innerHTML = "Give/Get";
-        wheatClick = 0;
-    }
-
-    if(gBrick.onclick && brickClick == 2) {
-        //Can only get 1 resource type
-        if(woodClick == 2){
-            gWood.innerHTML = "Give/Get";
-            woodClick = 0;
-        }
-        else if(oreClick == 2){
-            gOre.innerHTML = "Give/Get";
-            oreClick = 0;
-        }
-        else if(sheepClick == 2){
-            gSheep.innerHTML = "Give/Get";
-            sheepClick = 0;
-        }
-        else if(wheatClick == 2){
-            gWheat.innerHTML = "Give/Get";
-            wheatClick = 0;
-        }
-        getBrick();
-    }
-    else if (gBrick.onclick && brickClick > 2){
-        gBrick.innerHTML = "Give/Get";
-        brickClick = 0;
-    }
+     mgetWood = false;
+     mgetOre = false;
+     mgetSheep = false;
+     mgetWheat = false;
 }
 
-function giveWood() {
-    var tResult = document.getElementById("tResult");
-    tResult.innerHTML = "";
+function setMgetWood() {
+     mgetWood = true;
 
-    gWood = document.getElementById("tradeWood");
-    gWood.innerHTML = "Give 4";
-    woodClick++;
-
-    //Can Only give 1 resource type
-    if(brickClick == 1){
-        gBrick.innerHTML = "Give/Get";
-        brickClick = 0;
-    }
-    else if(oreClick == 1){
-        gOre.innerHTML = "Give/Get";
-        oreClick = 0;
-    }
-    else if(sheepClick == 1){
-        gSheep.innerHTML = "Give/Get";
-        sheepClick = 0;
-    }
-    else if(wheatClick == 1){
-        gWheat.innerHTML = "Give/Get";
-        wheatClick = 0;
-    }
-
-    if(gWood.onclick && woodClick == 2) {
-        //Can only get 1 resource type
-        if(brickClick == 2){
-            gBrick.innerHTML = "Give/Get";
-            brickClick = 0;
-        }
-        else if(oreClick == 2){
-            gOre.innerHTML = "Give/Get";
-            oreClick = 0;
-        }
-        else if(sheepClick == 2){
-            gSheep.innerHTML = "Give/Get";
-            sheepClick = 0;
-        }
-        else if(wheatClick == 2){
-            gWheat.innerHTML = "Give/Get";
-            wheatClick = 0;
-        }
-        getWood();
-    }
-    else if (gWood.onclick && woodClick > 2){
-        gWood.innerHTML = "Give/Get";
-        woodClick = 0;
-    }
+     mgetBrick = false;
+     mgetOre = false;
+     mgetSheep = false;
+     mgetWheat = false;
 }
 
-function giveOre() {
-    var tResult = document.getElementById("tResult");
-    tResult.innerHTML = "";
+function setMgetOre() {
+     mgetOre = true;
 
-    gOre = document.getElementById("tradeOre");
-    gOre.innerHTML = "Give 4";
-    oreClick++;
-
-    //Can Only give 1 resource type
-    if(woodClick == 1){
-        gWood.innerHTML = "Give/Get";
-        woodClick = 0;
-    }
-    else if(brickClick == 1){
-        gBrick.innerHTML = "Give/Get";
-        brickClick = 0;
-    }
-    else if(sheepClick == 1){
-        gSheep.innerHTML = "Give/Get";
-        sheepClick = 0;
-    }
-    else if(wheatClick == 1){
-        gWheat.innerHTML = "Give/Get";
-        wheatClick = 0;
-    }
-
-    if(gOre.onclick && oreClick == 2) {
-        //Can only get 1 resource type
-        if(woodClick == 2){
-            gWood.innerHTML = "Give/Get";
-            woodClick = 0;
-        }
-        else if(brickClick == 2){
-            gBrick.innerHTML = "Give/Get";
-            brickClick = 0;
-        }
-        else if(sheepClick == 2){
-            gSheep.innerHTML = "Give/Get";
-            sheepClick = 0;
-        }
-        else if(wheatClick == 2){
-            gWheat.innerHTML = "Give/Get";
-            wheatClick = 0;
-        }
-        getOre();
-    }
-    else if (gOre.onclick && oreClick > 2){
-        gOre.innerHTML = "Give/Get";
-        oreClick = 0;
-    }
+     mgetWood = false;
+     mgetBrick = false;
+     mgetSheep = false;
+     mgetWheat = false;
 }
 
-function giveSheep() {
-    var tResult = document.getElementById("tResult");
-    tResult.innerHTML = "";
+function setMgetSheep() {
+     mgetSheep = true;
 
-    gSheep = document.getElementById("tradeSheep");
-    gSheep.innerHTML = "Give 4";
-    sheepClick++;
-
-    //Can Only give 1 resource type
-    if(woodClick == 1){
-        gWood.innerHTML = "Give/Get";
-        woodClick = 0;
-    }
-    else if(oreClick == 1){
-        gOre.innerHTML = "Give/Get";
-        oreClick = 0;
-    }
-    else if(brickClick == 1){
-        gBrick.innerHTML = "Give/Get";
-        brickClick = 0;
-    }
-    else if(wheatClick == 1){
-        gWheat.innerHTML = "Give/Get";
-        wheatClick = 0;
-    }
-
-    if(gSheep.onclick && sheepClick == 2) {
-        //Can only get 1 resource type
-        if(woodClick == 2){
-            gWood.innerHTML = "Give/Get";
-            woodClick = 0;
-        }
-        else if(oreClick == 2){
-            gOre.innerHTML = "Give/Get";
-            oreClick = 0;
-        }
-        else if(brickClick == 2){
-            gBrick.innerHTML = "Give/Get";
-            brickClick = 0;
-        }
-        else if(wheatClick == 2){
-            gWheat.innerHTML = "Give/Get";
-            wheatClick = 0;
-        }
-        getSheep();
-    }
-    else if (gSheep.onclick && sheepClick > 2){
-        gSheep.innerHTML = "Give/Get";
-        sheepClick = 0;
-    }
-}
-function giveWheat() {
-    var tResult = document.getElementById("tResult");
-    tResult.innerHTML = "";
-
-    gWheat = document.getElementById("tradeWheat");
-    gWheat.innerHTML = "Give 4";
-    wheatClick++;
-
-    //Can Only give 1 resource type
-    if(woodClick == 1){
-        gWood.innerHTML = "Give/Get";
-        woodClick = 0;
-    }
-    else if(oreClick == 1){
-        gOre.innerHTML = "Give/Get";
-        oreClick = 0;
-    }
-    else if(sheepClick == 1){
-        gSheep.innerHTML = "Give/Get";
-        sheepClick = 0;
-    }
-    else if(brickClick == 1){
-        gBrick.innerHTML = "Give/Get";
-        brickClick = 0;
-    }
-
-    if(gWheat.onclick && wheatClick == 2) {
-        //Can only get 1 resource type
-        if(woodClick == 2){
-            gWood.innerHTML = "Give/Get";
-            woodClick = 0;
-        }
-        else if(oreClick == 2){
-            gOre.innerHTML = "Give/Get";
-            oreClick = 0;
-        }
-        else if(sheepClick == 2){
-            gSheep.innerHTML = "Give/Get";
-            sheepClick = 0;
-        }
-        else if(brickClick == 2){
-            gBrick.innerHTML = "Give/Get";
-            brickClick = 0;
-        }
-        getWheat();
-    }
-    else if (gWheat.onclick && wheatClick > 2){
-        gWheat.innerHTML = "Give/Get";
-        wheatClick = 0;
-    }
+     mgetWood = false;
+     mgetOre = false;
+     mgetBrick = false;
+     mgetWheat = false;
 }
 
-//Get resource
-function getBrick() {
-    gBrick = document.getElementById("tradeBrick");
-    gBrick.innerHTML = "Get 1";
-}
-function getWood() {
-    gWood = document.getElementById("tradeWood");
-    gWood.innerHTML = "Get 1";
-}
-function getOre() {
-    gOre = document.getElementById("tradeOre");
-    gOre.innerHTML = "Get 1";
-}
-function getSheep() {
-    gSheep = document.getElementById("tradeSheep");
-    gSheep.innerHTML = "Get 1";
-}
-function getWheat() {
-    gWheat = document.getElementById("tradeWheat");
-    gWheat.innerHTML = "Get 1";
+function setMgetWheat() {
+     mgetWheat = true;
+
+     mgetWood = false;
+     mgetOre = false;
+     mgetSheep = false;
+     mgetBrick = false;
 }
 
-function trade() {
-    var tResult = document.getElementById("tResult");
-    gWood.innerHTML = "Give/Get";
-    gBrick.innerHTML = "Give/Get";
-    gOre.innerHTML = "Give/Get";
-    gWheat.innerHTML = "Give/Get";
-    gSheep.innerHTML = "Give/Get";
+/* give */
 
-    if(woodClick == 1){
-        woodClick = 0;
-        if (nWood > 3){
-            nWood -= 4;
-            get();
-            nResourceCard -= 3;
-            tResult.innerHTML = "Trade Success";
-        }
-        else{
-            tResult.innerHTML = "Trade failed";
-        }
-    }
-    else if(brickClick == 1){
-        brickClick = 0;
-        if (nBrick > 3){
-            nBrick -= 4;
-            get();
-            nResourceCard -= 3;
-            tResult.innerHTML = "Trade Success";
-        }
-        else{
-            tResult.innerHTML = "Trade failed";
 
-        }
-    }
-    else if(oreClick == 1){
-        oreClick = 0;
-        if (nOre > 3){
-            nOre -= 4;
-            get();
-            nResourceCard -= 3;
-            tResult.innerHTML = "Trade Success";
-        }
-        else{
-            tResult.innerHTML = "Trade failed";
-        }
-    }
-    else if(wheatClick == 1){
-        wheatClick = 0;
-        if (nWheat > 3){
-            nWheat -= 4;
-            get();
-            nResourceCard -= 3;
-            tResult.innerHTML = "Trade Success";
-        }
-        else{
-            tResult.innerHTML = "Trade failed";
-        }
-    }
-    else if(sheepClick == 1){
-        sheepClick = 0;
-        if (nSheep > 3){
-            nSheep -= 4;
-            get();
-            nResourceCard -= 3;
-            tResult.innerHTML = "Trade Success";
-        }
-        else{
-            tResult.innerHTML = "Trade failed";
-        }
-    }
+function setMgiveBrick() {
+     mgiveBrick = true;
+    console.log("Give brick fool");
+     mgiveWood = false;
+     mgiveOre = false;
+     mgiveSheep = false;
+     mgiveWheat = false;
 }
-function get() {
-    if(wheatClick == 2) {
-        gWheat.innerHTML = "Give/Get";
-        wheatClick = 0;
-        return nWheat++;
-    }
-    else if(woodClick == 2){
-        gWood.innerHTML = "Give/Get";
-        woodClick = 0;
-        return nWood++;
-    }
-    else if(oreClick == 2){
-        gOre.innerHTML = "Give/Get";
-        oreClick = 0;
-        return nOre++;
-    }
-    else if(sheepClick == 2){
-        gSheep.innerHTML = "Give/Get";
-        sheepClick = 0;
-        return nSheep++;
-    }
-    else if(brickClick == 2){
-        gBrick.innerHTML = "Give/Get";
-        brickClick = 0;
-        return nBrick++;
-    }
+
+function setMgiveWood() {
+     mgiveWood = true;
+
+     mgiveBrick = false;
+     mgiveOre = false;
+     mgiveSheep = false;
+     mgiveWheat = false;
+}
+
+function setMgiveOre() {
+     mgiveOre = true;
+
+     mgiveWood = false;
+     mgiveBrick = false;
+     mgiveSheep = false;
+     mgiveWheat = false;
+}
+
+function setMgiveSheep() {
+     mgiveSheep = true;
+
+     mgiveWood = false;
+     mgiveOre = false;
+     mgiveBrick = false;
+     mgiveWheat = false;
+}
+
+function setMgiveWheat() {
+     mgiveWheat = true;
+
+     mgiveWood = false;
+     mgiveOre = false;
+     mgiveSheep = false;
+     mgiveBrick = false;
+}
+
+
+function mTradeSend() {
+    var give;
+    var get;
+    var ok = true;
+    if(mgetBrick)
+        get = 'brick';
+    else if(mgetWood)
+        get = 'wood';
+    else if(mgetOre)
+        get = 'ore';
+    else if(mgetSheep)
+        get = 'sheep';
+    else if(mgetWheat)
+        get = 'wheat';
+    else
+        ok = false;
+
+    if(mgiveBrick)
+        give = 'brick';
+    else if(mgiveWood)
+        give = 'wood';
+    else if(mgiveOre)
+        give = 'ore';
+    else if(mgiveSheep)
+        give = 'sheep';
+    else if(mgiveWheat)
+        give = 'wheat';
+    else
+        ok = false;
+
+    if(ok)
+        SendMaritime(get,give);
+}
+
+
+function mTrade(){
+    reset = document.getElementById('mtNum').value = '';
+    document.getElementById('tradeP1').innerHTML = p1;
+    document.getElementById('tradeP2').innerHTML = p2name;
+    document.getElementById('tradeP3').innerHTML = p3name;
+}
+
+
+function pTrade(){
+    reset = document.getElementById('ptGiveBrick').value = '';
+    reset = document.getElementById('ptGiveWood').value = '';
+    reset = document.getElementById('ptGiveOre').value = '';
+    reset = document.getElementById('ptGiveSheep').value = '';
+    reset = document.getElementById('ptGiveWheat').value = '';
+    reset = document.getElementById('ptGiveCloth').value = '';
+    reset = document.getElementById('ptGivePaper').value = '';
+    reset = document.getElementById('ptGiveCoin').value = '';
+    reset = document.getElementById('ptGetBrick').value = '';
+    reset = document.getElementById('ptGetWood').value = '';
+    reset = document.getElementById('ptGetOre').value = '';
+    reset = document.getElementById('ptGetSheep').value = '';
+    reset = document.getElementById('ptGetWheat').value = '';
+    reset = document.getElementById('ptGetCloth').value = '';
+    reset = document.getElementById('ptGetPaper').value = '';
+    reset = document.getElementById('ptGetCoin').value = '';
+}
+function rTrade(){
+    reset = document.getElementById('ptrGiveBrick').value = '';
+    reset = document.getElementById('ptrGiveWood').value = '';
+    reset = document.getElementById('ptrGiveOre').value = '';
+    reset = document.getElementById('ptrGiveSheep').value = '';
+    reset = document.getElementById('ptrGiveWheat').value = '';
+    reset = document.getElementById('ptrGiveCloth').value = '';
+    reset = document.getElementById('ptrGivePaper').value = '';
+    reset = document.getElementById('ptrGiveCoin').value = '';
+    reset = document.getElementById('ptrGetBrick').value = '';
+    reset = document.getElementById('ptrGetWood').value = '';
+    reset = document.getElementById('ptrGetOre').value = '';
+    reset = document.getElementById('ptrGetSheep').value = '';
+    reset = document.getElementById('ptGetWheat').value = '';
+    reset = document.getElementById('ptrGetCloth').value = '';
+    reset = document.getElementById('ptrGetPaper').value = '';
+    reset = document.getElementById('ptrGetCoin').value = '';
+}
+function aTrade(){
+    reset = document.getElementById('ptrGiveBrick').value = document.getElementById('ptGetBrick').value;
+    reset = document.getElementById('ptrGiveWood').value = document.getElementById('ptGetWood').value;
+    reset = document.getElementById('ptrGiveOre').value = document.getElementById('ptGetOre').value;
+    reset = document.getElementById('ptrGiveSheep').value = document.getElementById('ptGetSheep').value;
+    reset = document.getElementById('ptrGiveWheat').value = document.getElementById('ptGetWheat').value;
+    reset = document.getElementById('ptrGiveCloth').value = document.getElementById('ptGetCloth').value;
+    reset = document.getElementById('ptrGivePaper').value = document.getElementById('ptGetPaper').value;
+    reset = document.getElementById('ptrGiveCoin').value = document.getElementById('ptGetCoin').value;
+    reset = document.getElementById('ptrGetBrick').value =document.getElementById('ptGiveBrick').value;
+    reset = document.getElementById('ptrGetWood').value = document.getElementById('ptGiveWood').value;
+    reset = document.getElementById('ptrGetOre').value = document.getElementById('ptGiveOre').value;
+    reset = document.getElementById('ptrGetSheep').value = document.getElementById('ptGiveSheep').value;
+    reset = document.getElementById('ptGetWheat').value = document.getElementById('ptGiveWheat').value;
+    reset = document.getElementById('ptrGetCloth').value = document.getElementById('ptGiveCloth').value;
+    reset = document.getElementById('ptrGetPaper').value = document.getElementById('ptGivePaper').value;
+    reset = document.getElementById('ptrGetCoin').value = document.getElementById('ptGiveCoin').value;
 }
 
 
@@ -1864,11 +1703,8 @@ function init() {
                     }else if(clickBuyKnight){
                             buildKnight(d.id);
                     }else if(clickActivateKnight){
-                            console.log("ACTIVATED");
                             buyActivateKnight(d.id);
-                    }else if(clickUpdateMighty){
-
-                    }else if(clickUpdateStrong){
+                    }else if(clickUpgradeKnight){
                             upgradeKnight(d.id);
                     }
 

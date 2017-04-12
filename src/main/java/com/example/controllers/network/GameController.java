@@ -326,6 +326,20 @@ public class GameController {
             }
     }
 
+    /*
+    @MessageMapping("/maritimetrade")
+    @SendTo("/topic/maritimetrade")
+    public ViewMaritimeTrade maritimeTrade(ViewMaritimeTrade pTrade, Principal caller){
+        MaritimeTrade aMaritimeTrade = pTrade.toMaritimeTrade();
+        boolean isValid = gameManager.checkMaritimeTradeEligibility(aMaritimeTrade);
+        if (isValid){
+            aMaritimeTrade.execute();
+        }
+        pTrade.setValid(isValid);
+        return pTrade;
+    }
+*/
+
     @MessageMapping("/traderequest")
     @SendTo("/topic/traderequest")
     public ViewPlayerTrade tradeRequest(ViewPlayerTrade pTrade, Principal caller){

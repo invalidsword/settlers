@@ -3,6 +3,8 @@
 <head>
     <title>Danklers of Catan</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -36,302 +38,528 @@
     /*]]>*/
 </script>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">Lords of Catan</a>
-        </div>
-        <div class="collapse navbar-collapse" id="myNavbar">
-            <ul class="nav navbar-nav navbar-right">
-                <!-- Trigger the quit game modal with a button -->
-                <li><a href="#" data-toggle="modal" data-target="#myModal1" style="font-size: 25px;">Quit Game</a></li>
-                <!-- Trigger the save game modal with a button -->
-                <li><a href="#" data-toggle="modal" data-target="#myModal5" style="font-size: 25px;">Save Game</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div class="container-fluid bg-5" style="padding-top: 7%; padding-bottom: 0%">
-    <!--PLAYER 1-->
-    <div class="col-sm-4 btn-group-vertical">
-        <button id="player1" class="btn turnWabble" type="button" style="z-index: 9; width: 20%;"><!--/*@thymesVar id="username" type=""*/-->
-        <span th:text="${username}"></span></button>
-    </div>
-
-    <div class="col-sm-4">
-        <!--DICE-->
-        <img src="/images/preRed.png" id="die1" class="die1" style="display: inline; width: 23%; height: 23%; margin-left: 15%"/>
-        <img src="/images/preYellow.png" id="die2" class="die2" style="display: inline; width: 23%; height: 23%"/>
-        <img src="/images/preWhite.png" id="eventDie" class="eventDie" style="display: inline; width: 23%; height: 23%"/>
-        <button class="btn-3d red" onclick="rollDice()" id="rolldice">Roll Dice</button>
-        <h2 id="status" style="margin-left: 640px;"></h2>
-    </div>
-
-    <!--PLAYER 2-->
-    <div class="col-sm-4">
-        <button id="player2" class="btn turnWabble" type="button" style="z-index: 9; width: 20%; margin-left: 10%;"></button>
-    </div>
-</div>
-
-<div class="container-fluid bg-5" style="padding-top: 0px;">
-    <!--PLAYER options-->
-    <div class="col-sm-2 btn-group-vertical">
-        <!--Placement Options-->
-        <table class="table table-condensed">
-            <thead>
-            <tr>
-                <th>Placement Options</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
+<!-- Sidebar1 -->
+<div class="w3-sidebar w3-bar-block w3-black w3-animate-left" style="display:none; z-index:10" id="mySidebar1">
+    <table class="table table-condensed">
+        <tbody>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
                 <td>
-                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                    <label class="radio w3-hover-text-red" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
                         <input type="radio" name="optradio" id="bRoad" onclick="buyRoad()">Buy Road</input>
                     </label>
                 </td>
-            </tr>
-            <tr>
+            </a>
+        </tr>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
                 <td>
-                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                    <label class="radio w3-hover-text-yellow" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
                         <input type="radio" name="optradio" id="bSettlement" onclick="buySettlement()">Buy Settlement</input>
                     </label>
                 </td>
-            </tr>
-            <tr>
+            </a>
+        </tr>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
                 <td>
-                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                    <label class="radio w3-hover-text-green" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
                         <input type="radio" name="optradio" id="uCity" onclick="upgradeCity()">Upgrade to City</input>
                     </label>
                 </td>
-            </tr>
-            <tr>
+            </a>
+        </tr>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
                 <td>
-                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                    <label class="radio w3-hover-text-blue" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
                         <input type="radio" name="optradio" id="mShip" onclick="moveShip()">Move Ship</input>
                     </label>
                 </td>
-            </tr>
-            <tr>
+            </a>
+        </tr>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
                 <td>
-                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                    <label class="radio w3-hover-text-red" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
                         <input type="radio" name="optradio" id="aKnight" onclick="activateKnight()">Activate Knight</input>
                     </label>
                 </td>
-            </tr>
-            <tr>
+            </a>
+        </tr>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
                 <td>
-                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
+                    <label class="radio w3-hover-text-yellow" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
                         <input type="radio" name="optradio" id="bKnight" onclick="buyKnight()">Buy Knight (basic)</input>
                     </label>
                 </td>
-            </tr>
-            <tr>
+            </a>
+        </tr>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
                 <td>
-                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
-                        <input type="radio" name="optradio" id="uKnightStrong" onclick="updateStrong()">Upgrade Knight (strong)</input>
+                    <label class="radio w3-hover-text-green" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                        <input type="radio" name="optradio" id="uKnight" onclick="upgradeAKnight()">Update Knight</input>
                     </label>
                 </td>
-            </tr>
-            <tr>
+            </a>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="w3-overlay w3-animate-opacity" onclick="w3_close1()" style="cursor:pointer" id="myOverlay1"></div>
+
+<!-- Sidebar2 -->
+<div class="w3-sidebar w3-bar-block w3-black w3-animate-left" style="display:none; z-index:10" id="mySidebar2">
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-red" id="resourceCard" style="margin-top:45%" data-toggle="modal" data-target="#myModal2"></a>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-yellow" id="commodityCard" data-toggle="modal" data-target="#myModal3"></a>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-green" id="totalKnight" data-toggle="modal" data-target="#myModal4"></a>
+</div>
+<div class="w3-overlay w3-animate-opacity" onclick="w3_close2()" style="cursor:pointer" id="myOverlay2"></div>
+
+<!-- Sidebar3 -->
+<div class="w3-sidebar w3-bar-block w3-black w3-animate-left" style="display:none; z-index:10" id="mySidebar3">
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-red" id="maritimeTrade" onclick="mTrade()" style="margin-top:45%" data-toggle="modal" data-target="#myModal6">Maritime Trade</a>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-yellow" onclick="pTrade()">Trade with Players</a>
+    <table class="table table-condensed">
+        <tbody>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
                 <td>
-                    <label class="radio" style="margin-bottom: 0px; margin-top: 0px;">
-                        <input type="radio" name="optradio" id="uKnightMighty" onclick="updateMighty()">Upgrade Knight (mighty)</input>
+                    <label class="radio w3-hover-text-red" data-toggle="modal" data-target="#myModal7"  onclick="pTrade()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                        <input type="radio" name="optradio" id="tradeP1"></input>
                     </label>
                 </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <h3>Clickable Counter</h3>
-        <!-- Trigger the Resource Cards modal with a button -->
-        <button id="resourceCard" type="button" class="btn btn-primary" style="margin-left: 1.6%; font-size: 100%; width: 100%; height: 100%;" data-toggle="modal" data-target="#myModal2"></button>
-        <!-- Trigger the Commodity Cards modal with a button -->
-        <button id="commodityCard" type="button" class="btn btn-primary" style="margin-left: 1.6%; font-size: 100%; width: 100%; height: 100%;" data-toggle="modal" data-target="#myModal3"></button>
-        <!-- Trigger the Knights modal with a button -->
-        <button id="totalKnight" type="button" class="btn btn-primary" style="margin-left: 1.6%; font-size: 100%; width: 100%; height: 100%;" data-toggle="modal" data-target="#myModal4"></button>
-        <!-- Trigger the Maritime Trade modal with a button -->
-        <button id="maritimeTrade" onclick="setPreResult()" type="button" class="btn btn-primary" style="margin-left: 1.6%; font-size: 100%; width: 100%; height: 100%;" data-toggle="modal" data-target="#myModal6"></button>
-
-        <h3>Counter</h3>
-        <h4 id="road"></h4>
-        <h4 id="ship"></h4>
-        <h4 id="settlement"></h4>
-        <h4 id="city"></h4>
-        <h4 id="wall"></h4>
-        <h4 id="gold"></h4>
-        <h4 id="victoryPt"></h4>
-    </div>
-
-    <div class="col-sm-10">
-        <!--No resources message-->
-        <div id="noResource">No resource you poor sorry ass woeeee</div>
-        <svg id="svgcanvas" width="100%" height="700"></svg>
-    </div>
+            </a>
+        </tr>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
+                <td>
+                    <label class="radio w3-hover-text-yellow" data-toggle="modal" data-target="#myModal7"  onclick="pTrade()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                        <input type="radio" name="optradio" id="tradeP2"></input>
+                    </label>
+                </td>
+            </a>
+        </tr>
+        <tr>
+            <a href="#" class="w3-bar-item w3-button w3-black w3-hover-none">
+                <td>
+                    <label class="radio w3-hover-text-green" data-toggle="modal" data-target="#myModal7"  onclick="pTrade()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                        <input type="radio" name="optradio" id="tradeP3"></input>
+                    </label>
+                </td>
+            </a>
+        </tr>
+        </tbody>
+    </table>
 </div>
+<div class="w3-overlay w3-animate-opacity" onclick="w3_close3()" style="cursor:pointer" id="myOverlay3"></div>
 
-<div class="container-fluid bg-5" style="z-index: 10;">
-    <!--PLAYER 3-->
-    <div class="col-sm-4">
-        <button id="player3" class="btn turnWabble" type="button" style="z-index: 9; bottom: 1%; width: 20%;"></button>
-    </div>
-
-    <!--End Turn Button-->
-    <div class="col-sm-4">
-        <button type="button" onclick="endTurn()" class="btn hvr-pulse-grow" id="endTurn" style="bottom: 1%; width: 35%; height: 7%; left: 32%;">End Turn</button>
-    </div>
-
-    <!--PLAYER 4-->
-    <div class="col-sm-4">
-        <button id="player4" class="btn btn-primary turnWabble" type="button" style="z-index: 9; bottom: 1%; margin-left: 10%; width: 20%;"></button>
-    </div>
+<!-- Sidebar4 -->
+<div class="w3-sidebar w3-bar-block w3-black w3-animate-left" style="display:none; z-index:10" id="mySidebar4">
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-red" id="road" style="margin-top:45%"></a>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-yellow" id="ship"></a>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-green" id="settlement"></a>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-blue" id="city"></a>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-red" id="wall"></a>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-yellow" id="gold"></a>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-green" id="victoryPt" style="margin-top: 120%"></a>
+    <a href="#" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:80%; margin-left:10%; height: 3%">100%</a>
 </div>
+<div class="w3-overlay w3-animate-opacity" onclick="w3_close4()" style="cursor:pointer" id="myOverlay4"></div>
 
-<!-- MODALS -->
-<!-- Modal for Quit Game -->
-<div class="modal" id="myModal1" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" style="color: black">Quit Game</h4>
-            </div>
-            <div class="modal-body" style="color: black">
-                <p>Would you like to quit this game?</p>
-            </div>
-            <div class="modal-footer">
-                <a href="http://localhost:8080/gameroom" class="btn btn-primary">Quit</a>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+<!-- Sidebar5 -->
+<div class="w3-sidebar w3-bar-block w3-black w3-animate-left" style="display:none; z-index:10" id="mySidebar5">
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-red" id="saveGame" style="margin-top:45%" data-toggle="modal" data-target="#myModal1">Quit Game</a>
+    <a href="#" class="w3-bar-item w3-button w3-hover-none w3-hover-text-yellow" id="quitGame" data-toggle="modal" data-target="#myModal5">Save Game</a>
+</div>
+<div class="w3-overlay w3-animate-opacity" onclick="w3_close5()" style="cursor:pointer" id="myOverlay5"></div>
+
+<div zclass="w3-main" id="main" style="padding:0%">
+
+    <div class="container-fluid bg-5" style="padding-top: 1%; padding-bottom: 0%">
+        <!--PLAYER 1-->
+        <div class="col-sm-4 btn-group-vertical">
+            <button id="player1" class="btn turnWabble" type="button" style="z-index: 9; width: 20%;"><!--/*@thymesVar id="username" type=""*/-->
+                <span th:text="${username}"></span></button>
+        </div>
+
+        <div class="col-sm-4">
+            <!--DICE-->
+            <img src="/images/preRed.png" id="die1" class="die1" style="display: inline; width: 23%; height: 23%; margin-left: 15%"/>
+            <img src="/images/preYellow.png" id="die2" class="die2" style="display: inline; width: 23%; height: 23%"/>
+            <img src="/images/preWhite.png" id="eventDie" class="eventDie" style="display: inline; width: 23%; height: 23%"/>
+            <button class="btn-3d red" onclick="rollDice()" id="rolldice">Roll Dice</button>
+            <h2 id="status" style="margin-left: 640px;"></h2>
+        </div>
+
+        <!--PLAYER 2-->
+        <div class="col-sm-4">
+            <button id="player2" class="btn turnWabble" type="button" style="z-index: 9; width: 20%; margin-left: 10%;"></button>
+        </div>
+    </div>
+
+    <div class="container-fluid bg-5" style="padding-top: 0px;">
+        <!--PLAYER options-->
+        <div class="col-sm-2 btn-group-vertical">
+            <button class="w3-button" onclick="w3_open1()">&#9776; Placement Options</button>
+            <button class="w3-button" onclick="w3_open2()">&#9776; Cards and Knights</button>
+            <button class="w3-button" onclick="w3_open3()">&#9776; Trades</button>
+            <button class="w3-button" onclick="w3_open4()">&#9776; Inventory</button>
+            <button class="w3-button" onclick="w3_open5()">&#9776; Save or Quit Game</button>
+            <!--No resources message-->
+            <div id="noResource">No resource you poor sorry ass woeeee</div>
+        </div>
+
+        <div class="col-sm-10">
+            <svg id="svgcanvas" width="100%" height="700"></svg>
+        </div>
+    </div>
+
+    <div class="container-fluid bg-5" style="z-index: 10;">
+        <!--PLAYER 3-->
+        <div class="col-sm-4">
+            <button id="player3" class="btn turnWabble" type="button" style="z-index: 9; bottom: 1%; width: 20%;"></button>
+        </div>
+
+        <!--End Turn Button-->
+        <div class="col-sm-4">
+            <button type="button" onclick="endTurn()" class="btn hvr-pulse-grow" id="endTurn" style="bottom: 1%; width: 35%; height: 7%; left: 32%;">End Turn</button>
+        </div>
+
+        <!--PLAYER 4-->
+        <div class="col-sm-4">
+            <button id="player4" class="btn btn-primary turnWabble" type="button" style="z-index: 9; bottom: 1%; margin-left: 10%; width: 20%;"></button>
+        </div>
+    </div>
+
+
+    <!-- MODALS -->
+    <!-- Modal for Quit Game -->
+    <div class="modal" id="myModal1" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="color: black">Quit Game</h4>
+                </div>
+                <div class="modal-body" style="color: black">
+                    <p>Would you like to quit this game?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="http://localhost:8080/lobby" class="btn btn-primary">Quit</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Modal for Save Game -->
-<div class="modal" id="myModal5" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" style="color: black">Save Game</h4>
-            </div>
-            <div class="modal-body" style="color: black">
-                <p>Would you like to save this game?</p>
-                <p>Save game as:</p>
-            </div>
-            <div class="form-group">
-                <input type="text" class="form-control" id="usr" placeholder="Enter the name of the saving game"/>
-            </div>
-            <div class="modal-footer">
-                <a href="http://localhost:8080/lobby" class="btn btn-primary">Save</a>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal for Resource Cards -->
-<div class="modal" id="myModal2" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" style="color: black">Resource Cards</h4>
-            </div>
-            <div class="modal-body" style="color: black">
-                <img src="/images/ResourceCards.jpg" style="margin-left: 30px; display:inline" width="500" height="145"/>
-                <p id="brick" style="margin-left: 75px;">1</p>
-                <p id="wood" style="margin-left: 175px; margin-top: -39px;"></p>
-                <p id="ore" style="margin-left: 275px; margin-top: -39px;"></p>
-                <p id="sheep" style="margin-left: 375px; margin-top: -39px;"></p>
-                <p id="wheat" style="margin-left: 475px; margin-top: -39px;"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    <!-- Modal for Save Game -->
+    <div class="modal" id="myModal5" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="color: black">Save Game</h4>
+                </div>
+                <div class="modal-body" style="color: black">
+                    <p>Would you like to save this game?</p>
+                    <p>Save game as:</p>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="usr" placeholder="Enter the name of the saving game"/>
+                </div>
+                <div class="modal-footer">
+                    <a href="http://localhost:8080/lobby" class="btn btn-primary">Save</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Modal for Commodity Cards -->
-<div class="modal" id="myModal3" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" style="color: black">Commodity Cards</h4>
-            </div>
-            <div class="modal-body" style="color: black">
-                <img src="/images/CommodityCards.jpg" style="margin-left: 100px; display:inline" width="371" height="183"/>
-                <p id="coin" style="margin-left: 155px;"></p>
-                <p id="cloth" style="margin-left: 280px; margin-top: -39px;"></p>
-                <p id="book" style="margin-left: 405px; margin-top: -39px;"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal for Knights -->
-<div class="modal" id="myModal4" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" style="color: black">Knights</h4>
-            </div>
-            <div class="modal-body" style="color: black">
-                <img src="/images/Knights.png" style="margin-left: 30px; display: inline" width="499" height="151"/>
-                <button id="knight1" onclick="getKnight1()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 55px; width: 100px; height: 40px;"></button>
-                <button id="knight2" onclick="getKnight2()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 70px; width: 100px; height: 40px;"></button>
-                <button id="knight3" onclick="getKnight3()" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 70px; width: 100px; height: 40px;"></button>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    <!-- Modal for Resource Cards -->
+    <div class="modal" id="myModal2" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="color: black">Resource Cards</h4>
+                </div>
+                <div class="modal-body" style="color: black">
+                    <img src="/images/ResourceCards.jpg" style="margin-left: 30px; display:inline" width="500" height="145"/>
+                    <p id="brick" style="margin-left: 75px;">1</p>
+                    <p id="wood" style="margin-left: 175px; margin-top: -39px;"></p>
+                    <p id="ore" style="margin-left: 275px; margin-top: -39px;"></p>
+                    <p id="sheep" style="margin-left: 375px; margin-top: -39px;"></p>
+                    <p id="wheat" style="margin-left: 475px; margin-top: -39px;"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Modal for Maritime Trade -->
-<div class="modal" id="myModal6" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" style="color: black">Maritime Trade</h4>
-            </div>
-            <div class="modal-body" style="color: black">
-                <img src="/images/ResourceCards.jpg" style="margin-left: 30px; margin-bottom: 10px; play:inline" width="500" height="145"/>
-                <button id="tradeBrick" onclick="giveBrick()" type="button" class="btn btn-primary" style="padding: 0px; font-size: 20px; margin-left: 35px; width: 80px; height: 40px;"></button>
-                <button id="tradeWood" onclick="giveWood()" type="button" class="btn btn-primary" style="padding: 0px; font-size: 20px; margin-left: 20px; width: 80px; height: 40px;"></button>
-                <button id="tradeOre" onclick="giveOre()" type="button" class="btn btn-primary" style="padding: 0px; font-size: 20px; margin-left: 15px; width: 80px; height: 40px;"></button>
-                <button id="tradeSheep" onclick="giveSheep()" type="button" class="btn btn-primary" style="padding: 0px; font-size: 20px; margin-left: 20px; width: 80px; height: 40px;"></button>
-                <button id="tradeWheat" onclick="giveWheat()" type="button" class="btn btn-primary" style="padding: 0px; font-size: 20px; margin-left: 15px; width: 80px; height: 40px;"></button>
-                <h2 id="tResult" style="margin-left: 35%;"></h2>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-primary" onClick="trade()">Trade</a>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    <!-- Modal for Commodity Cards -->
+    <div class="modal" id="myModal3" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="color: black">Commodity Cards</h4>
+                </div>
+                <div class="modal-body" style="color: black">
+                    <img src="/images/CommodityCards.jpg" style="margin-left: 100px; display:inline" width="371" height="183"/>
+                    <p id="coin" style="margin-left: 155px;"></p>
+                    <p id="cloth" style="margin-left: 280px; margin-top: -39px;"></p>
+                    <p id="book" style="margin-left: 405px; margin-top: -39px;"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <!-- Modal for Knights -->
+    <div class="modal" id="myModal4" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="color: black">Knights</h4>
+                </div>
+                <div class="modal-body" style="color: black">
+                    <img src="/images/Knights.png" style="margin-left: 30px; display: inline" width="499" height="151"/>
+                    <button id="knight1" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 55px; width: 100px; height: 40px;"></button>
+                    <button id="knight2" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 70px; width: 100px; height: 40px;"></button>
+                    <button id="knight3" type="button" class="btn btn-primary" style="font-size: 20px; margin-left: 70px; width: 100px; height: 40px;"></button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal for Maritime Trade -->
+    <div class="modal" id="myModal6" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick = "resetMres()" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="color: black">Maritime Trade</h4>
+                </div>
+                <div class="modal-body" style="color: black">
+                    <h4>Choose and enter the number of resources to get and give.</h4>
+                    <img src="/images/ResourceCards.jpg" style="margin-left: 30px; margin-bottom: 10px; play:inline" width="500" height="145"/>
+                    <h4 style="margin: 0">Give</h4>
+                    <form>
+                        <label class="radio-inline" id="mtGiveBrick" onclick = "setMgiveBrick()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                            <input type="radio" name="optradio"/>
+                        </label>
+                        <label class="radio-inline" id="mtGiveWood" onclick = "setMgiveWood()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                            <input type="radio" name="optradio"/>
+                        </label>
+                        <label class="radio-inline" id="mtGiveOre" onclick = "setMgiveOre()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                            <input type="radio" name="optradio"/>
+                        </label>
+                        <label class="radio-inline" id="mtGiveSheep" onclick = "setMgiveSheep()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                            <input type="radio" name="optradio"/>
+                        </label>
+                        <label class="radio-inline" id="mtGiveWheat" onclick = "setMgiveWheat()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                            <input type="radio" name="optradio"/>
+                        </label>
+                    </form>
+                    <h4>Get</h4>
+                    <form>
+                        <label class="radio-inline" id="mtGetBrick" onclick = "setMgetBrick()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                            <input type="radio" name="optradio"/>
+                        </label>
+                        <label class="radio-inline" id="mtGetWood" onclick = "setMgetWood()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                            <input type="radio" name="optradio"/>
+                        </label>
+                        <label class="radio-inline" id="mtGetOre" onclick = "setMgetOre()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                            <input type="radio" name="optradio"/>
+                        </label>
+                        <label class="radio-inline" id="mtGetSheep" onclick="setMgetSheep()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                            <input type="radio" name="optradio"/>
+                        </label>
+                        <label class="radio-inline" id="mtGetWheat" onclick="setMgetWheat()" style="margin-bottom: 0px; margin-top: 0px; padding-left: 15%">
+                            <input type="radio" name="optradio"/>
+                        </label>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" onclick = "mTradeSend()">Trade</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script th:src="@{/js/gamelogic.js}"></script>
-<!-- Creates a popup that asks user if he wishes to leave page.-->
-<script language="JavaScript" type="text/javascript">
-    //<![CDATA[
-    window.onbeforeunload = function(){
-        return 'Are you sure you want to leave?';
-    };
-    //]]>
-</script>
+    <!-- Modal Player Trade -->
+    <div class="modal" id="myModal7" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="color: black">Trade with Player</h4>
+                </div>
+                <div class="modal-body" style="color: black">
+                    <h4>Choose and enter the number of resources to get and give.</h4>
+                    <img src="/images/ResourceCards.jpg" style="margin: 0px; margin-bottom: 10px; play:inline" width="350" height="120"/>
+                    <img src="/images/CommodityCards.jpg" style="margin: 0px; display:inline" width="200" height="120"/>
+                    <h4 style="margin: 0">Give</h4>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGiveBrick" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGiveWood" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGiveOre" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGiveSheep" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGiveWheat" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGiveCloth" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGivePaper" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGiveCoin" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                    </form>
+                    <h4>Get</h4>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGetBrick" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGetWood" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGetOre" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGetSheep" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGetWheat" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGetCloth" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGetPaper" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="0" id="ptGetCoin" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" onclick="aTrade()">Trade</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Modal Player Trade (Receiver) -->
+    <div class="modal" id="myModal8" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="color: black">Trade Requested</h4>
+                </div>
+                <div class="modal-body" style="color: black">
+                    <img src="/images/ResourceCards.jpg" style="margin: 0px; margin-bottom: 10px; play:inline" width="350" height="120"/>
+                    <img src="/images/CommodityCards.jpg" style="margin: 0px; display:inline" width="200" height="120"/>
+                    <h4 style="margin: 0">Give</h4>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <input class="form-control"  disabled="true" placeholder="0" id="ptrGiveBrick" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control"  disabled="true" placeholder="0" id="ptrGiveWood" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control"  disabled="true" placeholder="0" id="ptrGiveOre" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control"  disabled="true" placeholder="0" id="ptrGiveSheep" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGiveWheat" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGiveCloth" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGivePaper" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGiveCoin" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                    </form>
+                    <h4>Get</h4>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGetBrick" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGetWood" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGetOre" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGetSheep" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGetWheat" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGetCloth" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGetPaper" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" disabled="true" placeholder="0" id="ptrGetCoin" type="text" style="margin: 0px; padding: 0px; width: 65px"/>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" onclick="rTrade()">Accept</a>
+                    <button type="button"  onclick="rTrade()" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/gamelogic.js}"></script>
+    <!-- Creates a popup that asks user if he wishes to leave page.-->
+    <script language="JavaScript" type="text/javascript">
+        //<![CDATA[
+        window.onbeforeunload = function(){
+            return 'Are you sure you want to leave?';
+        };
+        //]]>
+    </script>
+</div>
 </body>
 </html>
